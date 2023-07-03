@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class UserRegisterResponseDTO {
+public class LoginResponseDTO {
 
     private String email;
 
@@ -24,11 +24,13 @@ public class UserRegisterResponseDTO {
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDateTime regDate;
 
+    private String token; // 인증 토큰
 
-    public UserRegisterResponseDTO(User user){
+    public LoginResponseDTO(User user, String token){
         this.email = user.getEmail();
         this.name = user.getName();
         this.nick = user.getNick();
         this.regDate = user.getRegDate();
+        this.token = token;
     }
 }
