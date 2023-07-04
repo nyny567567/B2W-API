@@ -5,6 +5,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -17,6 +18,7 @@ import java.util.Map;
 
 @Component
 @Slf4j
+@RequiredArgsConstructor
 
 public class TokenProvider {
     @Value("${jwt.secret}")
@@ -74,7 +76,6 @@ public class TokenProvider {
         return TokenUserInfo.builder()
                 .userId(claims.getSubject())
                 .email(claims.get("email", String.class))
-                .role(Role.valueOf(claims.get("role", String.class)))
                 .build();
     }
 
