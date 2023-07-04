@@ -52,4 +52,5 @@ public class UserRegisterRequestDTO {
                 .image((this.image))
                 .build();
     }
+
 }
