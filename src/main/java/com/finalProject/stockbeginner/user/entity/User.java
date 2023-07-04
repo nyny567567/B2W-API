@@ -39,7 +39,7 @@ public class User {
     private String nick;
 
     @Builder.Default
-    private Integer money = 5000000;
+    private Long money = 5000000L;
 
     @CreationTimestamp
     private LocalDateTime regDate;

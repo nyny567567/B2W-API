@@ -9,16 +9,15 @@ spring:
     password: mysql
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
-    # ??? ?? ? ?? DB? ?? ???? ??
     database-platform: org.hibernate.dialect.MySQL8Dialect
     hibernate:
       ddl-auto: create
-    database: mysql # DB ?? ??
+    database: mysql
 
 servlet:
   multipart:
-    max-file-size: 10MB # 1?? ??? ?? ???
-    max-request-size: 20MB # ?? ??? ?? ???
+    max-file-size: 10MB
+    max-request-size: 20MB
 
 logging.level:
   org.hibernate.SQL: debug

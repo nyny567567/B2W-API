@@ -38,6 +38,8 @@ public class UserController {
 
     //회원 탈퇴
 
-    //
+    //로그인
+
+    //이메일 검증
 
 }
