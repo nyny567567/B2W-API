@@ -53,12 +53,6 @@ public class TokenProvider {
                 .compact();
     }
 
-    /**
-     * 클라이언트가 전송한 토큰을 디코딩하여 토큰의 위조 여부를 확인
-     * 토큰을 json으로 파싱해서 클레임(토큰 정보)를 리턴
-     * @param token
-     * @return - 토큰 안에 있는 인증된 유저 정보를 반환
-     */
 
     public TokenUserInfo validateAndGetTokenUserInfo(String token) {
 
@@ -81,12 +75,3 @@ public class TokenProvider {
 
 
 }
-
-
-
-
-
-
-
-
-

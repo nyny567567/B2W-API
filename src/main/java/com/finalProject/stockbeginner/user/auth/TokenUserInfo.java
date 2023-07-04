@@ -1,5 +1,4 @@
 package com.finalProject.stockbeginner.user.auth;
-
 import lombok.*;
 
 @Getter

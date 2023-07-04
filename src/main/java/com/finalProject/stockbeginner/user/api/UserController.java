@@ -1,5 +1,7 @@
 package com.finalProject.stockbeginner.user.api;
 
+import com.finalProject.stockbeginner.user.auth.TokenUserInfo;
+import com.finalProject.stockbeginner.user.dto.UserUpdateDTO;
 import com.finalProject.stockbeginner.user.dto.request.LoginRequestDTO;
 import com.finalProject.stockbeginner.user.dto.request.UserRegisterRequestDTO;
 import com.finalProject.stockbeginner.user.dto.response.LoginResponseDTO;
@@ -9,11 +11,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.ui.Model;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+
+import javax.validation.Valid;
 
 @RestController
 @Slf4j
@@ -72,20 +77,25 @@ public class UserController {
 
 
     //회원 수정
-
-    //회원 탈퇴
-    @PostMapping("/withdrawal")
-    public String memberWithdrawal(@RequestParam String password, Model model, Authentication authentication) {
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        boolean result = userService.withdrawal(userDetails.getUsername(), password);
-
-        if (result) {
-            return "redirect:/logout";
-        } else {
-            model.addAttribute("wrongPassword", "비밀번호가 맞지 않습니다.");
-            return "/withdrawal";
+    @PatchMapping
+    public ResponseEntity<?> updateInfo(@Valid @RequestBody UserUpdateDTO dto, TokenUserInfo userInfo) {
+            try {
+              LoginResponseDTO responseDTO = userService.updateInfo(dto, userInfo);
+            return ResponseEntity.ok().body(responseDTO);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
 
+
+    //회원 탈퇴
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteUser(TokenUserInfo userInfo) {
+       userService.deleteUser(userInfo);
+
+        return ResponseEntity.noContent().build();
+    }
 }
+
