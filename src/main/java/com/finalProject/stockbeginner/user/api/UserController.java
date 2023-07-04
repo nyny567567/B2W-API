@@ -33,7 +33,7 @@ public class UserController {
     //로그인 요청 처리
     @PostMapping("/login")
     public ResponseEntity<?> login(
-            @Validated @RequestBody LoginRequestDTO dto
+            @Validated @io.swagger.v3.oas.annotations.parameters.RequestBody LoginRequestDTO dto
     ) {
         try {
             LoginResponseDTO responseDTO
