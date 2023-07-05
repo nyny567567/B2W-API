@@ -14,13 +14,24 @@ import com.finalProject.stockbeginner.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.FileCopyUtils;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.swing.*;
+import java.io.File;
+import java.io.IOException;
+import java.util.UUID;
 
 @Service
 @Slf4j
@@ -31,9 +42,12 @@ public class UserService {
     private final PasswordEncoder encoder;
     private final TokenProvider tokenProvider;
 
+    @Value("${upload.path}")
+    private String uploadRootPath;
+
 
     //회원 가입
-    public UserRegisterResponseDTO register(UserRegisterRequestDTO requestDTO)
+    public UserRegisterResponseDTO register(UserRegisterRequestDTO requestDTO, String uploadedFilePath)
 
             throws RuntimeException {
 
@@ -48,6 +62,12 @@ public class UserService {
         User saved = userRepository.save(requestDTO.toEntity());
         return new UserRegisterResponseDTO(saved);
     }
+
+    //닉네임 중복검사
+    public boolean isDuplicateNick (String nick) {
+        return userRepository.existsByNick(nick);
+    }
+
 
     //이메일 중복검사
     public boolean isDuplicate(String email) {
@@ -107,6 +127,32 @@ public class UserService {
             }
         userRepository.deleteById(userInfo.getUserId());
         }
+
+        //프로필 사진 업로드
+         public String uploadProfileImage(MultipartFile originalFile) throws IOException {
+
+        //루트 디렉토리가 존재하는 지 확인 후 존재하지 않으면 생성
+        File rootDir = new File(uploadRootPath);
+        if (!rootDir.exists()) rootDir.mkdir();
+
+        // 파일명을 유니크하게 변경
+        String uniqueFileName = UUID.randomUUID()
+                + "_" + originalFile.getOriginalFilename();
+
+        // 파일을 저장
+        File uploadFile = new File(uploadRootPath + "/" + uniqueFileName);
+        originalFile.transferTo(uploadFile);
+
+        return uniqueFileName;
+    }
+
+
+    public String findProfilePath(String userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow();
+        return uploadRootPath + "/" + user.getImage();
+    }
+
 
 }
 

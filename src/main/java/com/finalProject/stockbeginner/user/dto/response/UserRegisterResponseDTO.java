@@ -30,5 +30,6 @@ public class UserRegisterResponseDTO {
         this.name = user.getName();
         this.nick = user.getNick();
         this.regDate = user.getRegDate();
+
     }
 }
