@@ -1,5 +1,7 @@
 package com.finalProject.stockbeginner.config;
 
+import com.finalProject.stockbeginner.user.auth.OAuth2AuthenticationSuccessHandler;
+import com.finalProject.stockbeginner.user.service.UserOAuth2Service;
 import lombok.RequiredArgsConstructor;
 import org.apache.catalina.filters.CorsFilter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +19,8 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfig {
 
+    OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
+    UserOAuth2Service userOAuth2Service;
 
     @Bean
     public PasswordEncoder passwordEncoder() { return new BCryptPasswordEncoder();  }

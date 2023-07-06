@@ -37,15 +37,6 @@ public class UserController {
 
     private final UserService userService;
 
-    //카카오 로그인
-    @GetMapping("/user/kakao/callback")
-    public String kakaoLogin(String code) {
-        // code는 카카오 서버로부터 받은 인가 코드
-        log.info("kakaoLogin");
-        userService.kakaoLogin(code);
-        return "redirect:/";
-    }
-
 
     //로그인 요청 처리
     @PostMapping("/login")
