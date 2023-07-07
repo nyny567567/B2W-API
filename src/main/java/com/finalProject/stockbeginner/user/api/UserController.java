@@ -8,7 +8,9 @@ import com.finalProject.stockbeginner.user.dto.request.LoginRequestDTO;
 import com.finalProject.stockbeginner.user.dto.request.UserRegisterRequestDTO;
 import com.finalProject.stockbeginner.user.dto.response.LoginResponseDTO;
 import com.finalProject.stockbeginner.user.dto.response.UserRegisterResponseDTO;
+import com.finalProject.stockbeginner.user.service.OAuthService;
 import com.finalProject.stockbeginner.user.service.UserService;
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -36,6 +38,7 @@ import java.io.File;
 public class UserController {
 
     private final UserService userService;
+    private OAuthService oAuthService;
 
 
     //로그인 요청 처리
@@ -58,6 +61,14 @@ public class UserController {
     }
 
 
+    //카카오 로그인 코드 받기
+    @ResponseBody
+    @GetMapping("/kakao")
+    public void kakaoCallback(@RequestParam String code) {
+
+        System.out.println(code);
+        oAuthService.getKakaoAccessToken(code);
+    }
 
     //회원 가입
     @PostMapping

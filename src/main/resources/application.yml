@@ -20,15 +20,17 @@ spring:
         registration:
 
           kakao:
-            client-id: ${a04270787d60bccbf49ddcddba7a42c6}
+            client-id: 6d5436bbca874585f1aa1c07883d5eab
             authorization-grant-type: authorization_code
             client-name: Kakao
             provider: kakao
-            redirect-uri: "http://localhost:8181/login/oauth2/code/kakao"
+            redirect-uri: "https://localhost:8181/login/oauth2/code/kakao"
             scope:
               - profile_nickname
               - profile_image
               - account_email
+              - gender
+              - age_range
         provider:
           kakao:
             authorization-uri: https://kauth.kakao.com/oauth/authorize
