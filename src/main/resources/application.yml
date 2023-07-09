@@ -18,13 +18,12 @@ spring:
     oauth2:
       client:
         registration:
-
           kakao:
             client-id: 6d5436bbca874585f1aa1c07883d5eab
             authorization-grant-type: authorization_code
             client-name: Kakao
             provider: kakao
-            redirect-uri: "https://localhost:8181/login/oauth2/code/kakao"
+            redirect-uri: "http://localhost:8181/oauth/kakao/callback"
             scope:
               - profile_nickname
               - profile_image

@@ -63,11 +63,9 @@ public class UserController {
 
     //카카오 로그인 코드 받기
     @ResponseBody
-    @GetMapping("/kakao")
+    @GetMapping("/oauth/kakao/callback")
     public void kakaoCallback(@RequestParam String code) {
 
-        System.out.println(code);
-        oAuthService.getKakaoAccessToken(code);
     }
 
     //회원 가입
