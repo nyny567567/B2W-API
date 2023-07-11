@@ -1,8 +1,7 @@
 package com.finalProject.stockbeginner.config;
 
-import com.finalProject.stockbeginner.user.auth.OAuth2AuthenticationSuccessHandler;
+import com.finalProject.stockbeginner.filter.JwtAuthFilter;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -11,6 +10,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.filter.CorsFilter;
 
 
 @EnableWebSecurity
@@ -18,9 +18,7 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfig {
 
-
-    @Autowired
-    private OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
+    private final JwtAuthFilter jwtAuthFilter;
 
     @Bean
     public PasswordEncoder passwordEncoder() { return new BCryptPasswordEncoder();  }
@@ -33,6 +31,11 @@ public class WebSecurityConfig {
                 .antMatchers("/api/**").permitAll()
                 .anyRequest().authenticated();
 
+        // 토큰 인증 필터 연결
+        http.addFilterAfter(
+                jwtAuthFilter,
+                CorsFilter.class // import 주의: 스프링 꺼로
+        );
 
         return http.build();
     }
