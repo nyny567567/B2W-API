@@ -2,6 +2,7 @@ package com.finalProject.stockbeginner.user.dto.request;
 
 import com.finalProject.stockbeginner.user.entity.User;
 import lombok.*;
+import org.apache.catalina.connector.Request;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
@@ -25,7 +26,8 @@ public class UserRegisterRequestDTO {
 
     @NotBlank
     @Size(min = 2, max = 20)
-    private String name;
+    private String userName;
+
 
     @NotBlank
     @Size(min = 2, max = 10)
@@ -44,7 +46,7 @@ public class UserRegisterRequestDTO {
         return User.builder()
                 .email(this.email)
                 .password(this.password)
-                .name(this.name)
+                .name(this.userName)
                 .nick(this.nick)
                 .gender(this.gender)
                 .age(this.age)

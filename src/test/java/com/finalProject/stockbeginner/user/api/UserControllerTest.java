@@ -31,7 +31,7 @@ class UserControllerTest {
                 .password("!1234qwer")
                 .build();
         //when
-        UserRegisterResponseDTO responseDTO = userService.register(requestDTO);
+        UserRegisterResponseDTO responseDTO = userService.register(requestDTO );
         //then
         assertEquals(responseDTO.getNick(),"길동천재");
     }
