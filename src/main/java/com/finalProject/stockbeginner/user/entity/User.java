@@ -10,15 +10,17 @@ import org.springframework.data.annotation.CreatedDate;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 
 @Getter
+@Setter
 @ToString @EqualsAndHashCode(of = "id")
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 @Entity
 @Table(name = "stock_user")
-public class User {
+public class User  {
 
     @Id
     @Column(name = "user_id")
@@ -51,5 +53,8 @@ public class User {
     private String career;
 
     private String image;
+
+    
+
 
 }
