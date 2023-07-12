@@ -2,7 +2,6 @@ package com.finalProject.stockbeginner.user.api;
 
 import com.finalProject.stockbeginner.exception.DuplicatedEmailException;
 import com.finalProject.stockbeginner.exception.NoRegisteredArgumentsException;
-import com.finalProject.stockbeginner.user.auth.KakaoOAuth;
 import com.finalProject.stockbeginner.user.auth.TokenUserInfo;
 import com.finalProject.stockbeginner.user.dto.UserUpdateDTO;
 import com.finalProject.stockbeginner.user.dto.request.LoginRequestDTO;
@@ -13,7 +12,6 @@ import com.finalProject.stockbeginner.user.service.OAuthService;
 import com.finalProject.stockbeginner.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.Session;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -23,13 +21,11 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.view.RedirectView;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
 
 @RestController
@@ -40,16 +36,16 @@ public class UserController {
 
     private final UserService userService;
     private final OAuthService oAuthService;
-    private final KakaoOAuth kakaoOAuth;
+//    private final KakaoOAuth kakaoOAuth;
 
 
 
 
-    //카카오 로그인
-    @GetMapping("/kakao")
-    public void getKakaoAuthUrl(HttpServletResponse response) throws IOException {
-        response.sendRedirect(kakaoOAuth.responseUrl());
-    }
+//    //카카오 로그인
+//    @GetMapping("/kakao")
+//    public void getKakaoAuthUrl(HttpServletResponse response) throws IOException {
+//        response.sendRedirect(kakaoOAuth.responseUrl());
+//    }
 
     //로그인 요청 처리
     @PostMapping("/login")
@@ -71,25 +67,39 @@ public class UserController {
     }
 
 
-//    //카카오 로그인
-//    @GetMapping("/callback/kakao")
-//    public String login(@RequestParam("code") String code, HttpSession session) throws Exception {
-//        String access_Token = oAuthService.getKakaoAccessToken(code);
-////        userService.createKakaoUser(access_Token);
-//        HashMap<String, Object> userInfo = userService.getUserInfo(access_Token);
-//        System.out.println("login Controller : " + userInfo);
-//        userService.giveTokenToKakao(userInfo);
-//
-//
-////            클라이언트의 이메일이 존재할 때 세션에 해당 이메일과 토큰 등록
-////        if (userInfo.get("email") != null) {
-////            session.setAttribute("userId", userInfo.get("email"));
-////            session.setAttribute("access_Token", access_Token);
-////        }
-//
-//
-//        return "로그인에 성공했습니다.";
-//    }
+    //카카오 로그인
+    @GetMapping("/callback/kakao")
+    public RedirectView login(@RequestParam("code") String code, HttpSession session) throws Exception {
+
+        RedirectView redirectView = new RedirectView();
+
+        String access_Token = oAuthService.getKakaoAccessToken(code);
+        HashMap<String, Object> userInfo = userService.getUserInfo(access_Token);
+        System.out.println("login Controller : " + userInfo);
+
+        //    클라이언트의 이메일이 존재할 때 세션에 해당 이메일과 토큰 등록
+        if (userInfo.get("email") != null) {
+            session.setAttribute("userId", userInfo.get("email"));
+            session.setAttribute("access_Token", access_Token);
+
+        }
+        redirectView.setUrl("http://localhost:3000/");
+
+        return redirectView;
+    }
+
+    //카카오 로그아웃
+    @RequestMapping(value="/logout")
+    public RedirectView logout(HttpSession session) {
+
+        RedirectView redirectView = new RedirectView();
+
+        userService.kakaoLogout((String)session.getAttribute("access_Token"));
+        session.removeAttribute("access_Token");
+        session.removeAttribute("userId");
+        redirectView.setUrl("http://localhost:3000/");
+        return redirectView;
+    }
 
 
     //회원 가입
