@@ -43,8 +43,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder encoder;
     private final TokenProvider tokenProvider;
-//    private final OAuthService oAuthService;
-//    private final KakaoOAuth kakaoOAuth;
+
 
     @Value("${upload.path}")
     private String uploadRootPath;
@@ -286,14 +285,14 @@ public class UserService {
             String image = properties.getAsJsonObject().get("profile_image").getAsString();
             String email = kakao_account.getAsJsonObject().get("email").getAsString();
             String gender = kakao_account.getAsJsonObject().get("gender").getAsString();
-//            String age = kakao_account.getAsJsonObject().get("age_range").getAsString();
+            String age = kakao_account.getAsJsonObject().get("age_range").getAsString();
 
             userInfo.put("id", id);
             userInfo.put("nickname", nickname);
             userInfo.put("email", email);
             userInfo.put("image", image);
             userInfo.put("gender", gender);
-//            userInfo.put("age", age);
+            userInfo.put("age", age);
 
         } catch (IOException e) {
             e.printStackTrace();

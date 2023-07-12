@@ -54,6 +54,33 @@ public class TokenProvider {
                 .compact();
     }
 
+    public String createTokenToKakao(String email) {
+        //토큰 만료시간 생성
+        Date expiry = Date.from(
+                Instant.now().plus(1, ChronoUnit.DAYS)
+        );
+
+
+        //추가 클레임 정의
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("email", email);
+
+
+
+        return Jwts.builder()
+                .signWith(
+                        Keys.hmacShaKeyFor(SECRET_KEY.getBytes()),
+                        SignatureAlgorithm.HS512
+                )
+
+                .setClaims(claims) //
+                .setIssuer("관리자") // iss: 발급자 정보
+                .setIssuedAt(new Date())
+                .setExpiration(expiry)
+                .setSubject(email)
+                .compact();
+    }
+
 
 
     public TokenUserInfo validateAndGetTokenUserInfo(String token) {
@@ -74,6 +101,7 @@ public class TokenProvider {
                 .email(claims.get("email", String.class))
                 .build();
     }
+
 
 
 }

@@ -1,64 +1,35 @@
 package com.finalProject.stockbeginner.user.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.finalProject.stockbeginner.user.dto.response.LoginResponseDTO;
+import com.finalProject.stockbeginner.exception.BaseException;
+import com.finalProject.stockbeginner.exception.BaseResponseCode;
+import com.finalProject.stockbeginner.user.auth.TokenProvider;
+import com.finalProject.stockbeginner.user.dto.request.UserKakaoSignupRequestDTO;
+import com.finalProject.stockbeginner.user.dto.response.UserKakaoLoginResponseDTO;
+import com.finalProject.stockbeginner.user.dto.response.UserResponseDTO;
 import com.finalProject.stockbeginner.user.entity.User;
 import com.finalProject.stockbeginner.user.repository.UserRepository;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.List;
 
 @Service
 public class OAuthService {
-//    public KakaoOAuth kakaoOAuth;
-//    private UserRepository userRepository;
-//    private UserService userService;
 
-//    private KakaoUserInfoDTO getKakaoUserInfoDTO(String code) throws JsonProcessingException {
-//        ResponseEntity<String> accessTokenResponse = kakaoOAuth.requestAccessToken(code);
-//        KakaoOAuthTokenDTO oAuthToken = kakaoOAuth.getAccessToken(accessTokenResponse);
-//        ResponseEntity<String> userInfoResponse = kakaoOAuth.requestUserInfo(oAuthToken);
-//        KakaoUserInfoDTO kakaoUser = kakaoOAuth.getUserInfo(userInfoResponse);
-//        return kakaoUser;
-//    }
+    private TokenProvider tokenProvider;
+    private  UserService userService;
+    private UserRepository userRepository;
+    private UserResponseDTO userResponseDTO;
 
-//    public LoginResponseDTO kakaoLogin(String code) throws IOException {
-//        KakaoUserInfoDTO kakaoUser = getKakaoUserInfoDTO(code);
-//
-//        if(!userRepository.existsByEmail(kakaoUser.getKakao_account().getEmail())) {
-//            userRepository.save(
-//                    User.builder()
-//                            .email(kakaoUser.getKakao_account().getEmail())
-//                            .nick(kakaoUser.getKakao_account().getProfile().getNickname())
-//                            .password("kakao")
-//                            .name("kakao")
-//                            .build()
-//            );
-//            return userService.getSingleResult(userRepository.findByEmail(
-//                    kakaoUser.getKakao_account().getEmail()
-//            ).orElseThrow(EmailSigninFailedException::new));
-//        }
-//        return userService.getSingleResult(userRepository.findByEmail(
-//                kakaoUser.getKakao_account().getEmail()
-//                ).orElseThrow(EmailSigninFailedException::new));
-//
-//
-//
-//
-//        }
-//
-
-
-
-
-
-
-        public String getKakaoAccessToken (String code) {
+    public String getKakaoAccessToken (String code) {
             String access_Token = "";
             String refresh_Token = "";
             String reqURL = "https://kauth.kakao.com/oauth/token";
@@ -115,5 +86,43 @@ public class OAuthService {
             return access_Token;
         }
 
+        public UserKakaoLoginResponseDTO kakaoLogin(String access_Token) throws BaseException {
+            UserKakaoSignupRequestDTO userKakaoSignupRequestDTO = getUserKakaoSignupRequestDto(
+                    userService.getUserInfo(access_Token));
+            UserResponseDTO userResponseDto = findByUserKakaoIdentifier(userKakaoSignupRequestDTO.getUserKakaoIdentifier());
+            if (userResponseDTO == null) {
+                signUp(userKakaoSignupRequestDTO);
+                userResponseDTO = findByUserKakaoIdentifier(userKakaoSignupRequestDTO.getUserKakaoIdentifier());
+            }
+            String token = tokenProvider.createTokenToKakao(userResponseDTO.getEmail());
+            return new UserKakaoLoginResponseDTO(HttpStatus.OK, token, userResponseDTO.getEmail());
+        }
 
+
+    public UserResponseDTO findByUserKakaoIdentifier(String kakaoIdentifier) {
+        List<User> user = (List<User>) userRepository.findUserByUserKakaoIdentifier(kakaoIdentifier).orElseThrow(() -> new UsernameNotFoundException("해당하는 유저를 찾을 수 없습니다."));
+
+        if(user.size() == 0){
+            return null;
+        }
+        return new UserResponseDTO(user.get(0));
+    }
+    @Transactional
+    public String signUp(UserKakaoSignupRequestDTO userKakaoSignupRequestDto) throws BaseException {
+        String id;
+        try {
+            id = userRepository.save(userKakaoSignupRequestDto.toEntity()).getId();
+        } catch (Exception e) {
+            throw new BaseException(BaseResponseCode.FAILED_TO_SAVE_USER) {
+
+            };
+        }
+        return id;
+    }
+
+    private UserKakaoSignupRequestDTO getUserKakaoSignupRequestDto(HashMap<String, Object> userInfo){
+        String userPassword = "-1";
+        UserKakaoSignupRequestDTO userKakaoSignupRequestDto = new UserKakaoSignupRequestDTO(userInfo.get("email").toString(), userInfo.get("nickname").toString(),userPassword,userInfo.get("nickname").toString(),userInfo.get("id").toString());
+        return userKakaoSignupRequestDto;
+    }
 }

@@ -50,6 +50,8 @@ public class User  {
 
     private Integer age;
 
+    private String userKakaoIdentifier;
+
     private String career;
 
     private String image;

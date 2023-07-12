@@ -12,6 +12,7 @@ import com.finalProject.stockbeginner.user.service.OAuthService;
 import com.finalProject.stockbeginner.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoProperties;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -36,16 +37,8 @@ public class UserController {
 
     private final UserService userService;
     private final OAuthService oAuthService;
-//    private final KakaoOAuth kakaoOAuth;
 
 
-
-
-//    //카카오 로그인
-//    @GetMapping("/kakao")
-//    public void getKakaoAuthUrl(HttpServletResponse response) throws IOException {
-//        response.sendRedirect(kakaoOAuth.responseUrl());
-//    }
 
     //로그인 요청 처리
     @PostMapping("/login")
@@ -77,16 +70,18 @@ public class UserController {
         HashMap<String, Object> userInfo = userService.getUserInfo(access_Token);
         System.out.println("login Controller : " + userInfo);
 
-        //    클라이언트의 이메일이 존재할 때 세션에 해당 이메일과 토큰 등록
-        if (userInfo.get("email") != null) {
-            session.setAttribute("userId", userInfo.get("email"));
-            session.setAttribute("access_Token", access_Token);
+//        //    클라이언트의 이메일이 존재할 때 세션에 해당 이메일과 토큰 등록
+//        if (userInfo.get("email") != null) {
+//            session.setAttribute("userId", userInfo.get("email"));
+//            session.setAttribute("access_Token", access_Token);
 
-        }
+//
+//        }
         redirectView.setUrl("http://localhost:3000/");
 
         return redirectView;
     }
+
 
     //카카오 로그아웃
     @RequestMapping(value="/logout")
