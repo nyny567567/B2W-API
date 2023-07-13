@@ -3,8 +3,8 @@ package com.finalProject.stockbeginner.user.service;
 import com.finalProject.stockbeginner.exception.BaseException;
 import com.finalProject.stockbeginner.exception.BaseResponseCode;
 import com.finalProject.stockbeginner.user.auth.TokenProvider;
-import com.finalProject.stockbeginner.user.dto.request.UserKakaoSignupRequestDTO;
-import com.finalProject.stockbeginner.user.dto.response.UserKakaoLoginResponseDTO;
+import com.finalProject.stockbeginner.user.dto.request.KakaoRegisterRequestDTO;
+import com.finalProject.stockbeginner.user.dto.response.KakaoLoginResponseDTO;
 import com.finalProject.stockbeginner.user.dto.response.UserResponseDTO;
 import com.finalProject.stockbeginner.user.entity.User;
 import com.finalProject.stockbeginner.user.repository.UserRepository;
@@ -86,16 +86,16 @@ public class OAuthService {
             return access_Token;
         }
 
-        public UserKakaoLoginResponseDTO kakaoLogin(String access_Token) throws BaseException {
-            UserKakaoSignupRequestDTO userKakaoSignupRequestDTO = getUserKakaoSignupRequestDto(
+        public KakaoLoginResponseDTO kakaoLogin(String access_Token) throws BaseException {
+            KakaoRegisterRequestDTO kakaoRegisterRequestDTO = getUserKakaoSignupRequestDto(
                     userService.getUserInfo(access_Token));
-            UserResponseDTO userResponseDto = findByUserKakaoIdentifier(userKakaoSignupRequestDTO.getUserKakaoIdentifier());
+            UserResponseDTO userResponseDto = findByUserKakaoIdentifier(kakaoRegisterRequestDTO.getUserKakaoIdentifier());
             if (userResponseDTO == null) {
-                signUp(userKakaoSignupRequestDTO);
-                userResponseDTO = findByUserKakaoIdentifier(userKakaoSignupRequestDTO.getUserKakaoIdentifier());
+                signUp(kakaoRegisterRequestDTO);
+                userResponseDTO = findByUserKakaoIdentifier(kakaoRegisterRequestDTO.getUserKakaoIdentifier());
             }
             String token = tokenProvider.createTokenToKakao(userResponseDTO.getEmail());
-            return new UserKakaoLoginResponseDTO(HttpStatus.OK, token, userResponseDTO.getEmail());
+            return new KakaoLoginResponseDTO(HttpStatus.OK, token, userResponseDTO.getEmail());
         }
 
 
@@ -108,10 +108,10 @@ public class OAuthService {
         return new UserResponseDTO(user.get(0));
     }
     @Transactional
-    public String signUp(UserKakaoSignupRequestDTO userKakaoSignupRequestDto) throws BaseException {
+    public String signUp(KakaoRegisterRequestDTO kakaoRegisterRequestDto) throws BaseException {
         String id;
         try {
-            id = userRepository.save(userKakaoSignupRequestDto.toEntity()).getId();
+            id = userRepository.save(kakaoRegisterRequestDto.toEntity()).getId();
         } catch (Exception e) {
             throw new BaseException(BaseResponseCode.FAILED_TO_SAVE_USER) {
 
@@ -120,9 +120,9 @@ public class OAuthService {
         return id;
     }
 
-    private UserKakaoSignupRequestDTO getUserKakaoSignupRequestDto(HashMap<String, Object> userInfo){
+    private KakaoRegisterRequestDTO getUserKakaoSignupRequestDto(HashMap<String, Object> userInfo){
         String userPassword = "-1";
-        UserKakaoSignupRequestDTO userKakaoSignupRequestDto = new UserKakaoSignupRequestDTO(userInfo.get("email").toString(), userInfo.get("nickname").toString(),userPassword,userInfo.get("nickname").toString(),userInfo.get("id").toString());
-        return userKakaoSignupRequestDto;
+        KakaoRegisterRequestDTO kakaoRegisterRequestDto = new KakaoRegisterRequestDTO(userInfo.get("email").toString(), userInfo.get("nickname").toString(),userPassword,userInfo.get("nickname").toString(),userInfo.get("id").toString());
+        return kakaoRegisterRequestDto;
     }
 }
