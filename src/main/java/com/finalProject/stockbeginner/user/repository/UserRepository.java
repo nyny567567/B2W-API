@@ -2,6 +2,7 @@ package com.finalProject.stockbeginner.user.repository;
 
 import com.finalProject.stockbeginner.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
