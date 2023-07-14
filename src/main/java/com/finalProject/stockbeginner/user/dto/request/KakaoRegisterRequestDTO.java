@@ -10,10 +10,9 @@ import lombok.*;
 @NoArgsConstructor
 @ToString
 public class KakaoRegisterRequestDTO {
-   private KakaoRegisterRequestDTO kakaoRegisterRequestDTO;
 
-   private int id;
-   private final String userKakaoIdentifier = Integer.toString(kakaoRegisterRequestDTO.getId());
+   private long kakaoId;
+   private String password = String.valueOf(-kakaoId+345);
    private String nickname;
    private String image;
    private String email;
@@ -21,14 +20,13 @@ public class KakaoRegisterRequestDTO {
    private String age;
 
 
-   public KakaoRegisterRequestDTO(String email, String nickname, String userPassword, String nickname1, String id) {
-   }
 
    public User toEntity() {
       return User.builder()
+              .kakaoId(getKakaoId())
               .email(getEmail())
-              .password(String.valueOf(-1))
-              .name(userKakaoIdentifier)
+              .password("kakao6987")
+              .name("kakao")
               .nick(getNickname())
               .gender(getGender())
               .image(getImage())

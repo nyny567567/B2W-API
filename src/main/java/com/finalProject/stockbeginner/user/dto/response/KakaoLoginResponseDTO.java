@@ -18,13 +18,12 @@ public class KakaoLoginResponseDTO {
 
     private String nick;
 
-    private String access_Token; // 인증 토큰
+    private String token; // 인증 토큰
 
-    public KakaoLoginResponseDTO(User user, String access_Token){
+    public KakaoLoginResponseDTO(User user, String token){
         this.email = user.getEmail();
-        this.access_Token = access_Token;
+        this.nick = user.getNick();
+        this.token = token;
     }
 
-    public KakaoLoginResponseDTO(HttpStatus httpStatus, String token, String email) {
-    }
 }

@@ -4,8 +4,10 @@ import com.finalProject.stockbeginner.exception.DuplicatedEmailException;
 import com.finalProject.stockbeginner.exception.NoRegisteredArgumentsException;
 import com.finalProject.stockbeginner.user.auth.TokenUserInfo;
 import com.finalProject.stockbeginner.user.dto.UserUpdateDTO;
+import com.finalProject.stockbeginner.user.dto.request.KakaoRegisterRequestDTO;
 import com.finalProject.stockbeginner.user.dto.request.LoginRequestDTO;
 import com.finalProject.stockbeginner.user.dto.request.UserRegisterRequestDTO;
+import com.finalProject.stockbeginner.user.dto.response.KakaoLoginResponseDTO;
 import com.finalProject.stockbeginner.user.dto.response.LoginResponseDTO;
 import com.finalProject.stockbeginner.user.dto.response.UserRegisterResponseDTO;
 import com.finalProject.stockbeginner.user.service.OAuthService;
@@ -62,39 +64,33 @@ public class UserController {
 
     //카카오 로그인
     @GetMapping("/callback/kakao")
-    public RedirectView login(@RequestParam("code") String code, HttpSession session) throws Exception {
+    public ResponseEntity<?> login(@RequestParam("code") String code, HttpSession session) throws Exception {
 
         RedirectView redirectView = new RedirectView();
 
         String access_Token = oAuthService.getKakaoAccessToken(code);
-        HashMap<String, Object> userInfo = userService.getUserInfo(access_Token);
-        System.out.println("login Controller : " + userInfo);
+        System.out.println("login Controller : " + access_Token);
+        LoginResponseDTO loginResponseDTO = userService.kakaoLogin(access_Token);
+        System.out.println("login Controller 리스폰스 디티오 : " + loginResponseDTO);
+        
+        redirectView.setUrl("http://localhost:3000/");
 
-//        //    클라이언트의 이메일이 존재할 때 세션에 해당 이메일과 토큰 등록
-//        if (userInfo.get("email") != null) {
-//            session.setAttribute("userId", userInfo.get("email"));
-//            session.setAttribute("access_Token", access_Token);
+        return ResponseEntity.ok().body(loginResponseDTO);
+    }
 
 //
-//        }
-        redirectView.setUrl("http://localhost:3000/");
-
-        return redirectView;
-    }
-
-
-    //카카오 로그아웃
-    @RequestMapping(value="/logout")
-    public RedirectView logout(HttpSession session) {
-
-        RedirectView redirectView = new RedirectView();
-
-        userService.kakaoLogout((String)session.getAttribute("access_Token"));
-        session.removeAttribute("access_Token");
-        session.removeAttribute("userId");
-        redirectView.setUrl("http://localhost:3000/");
-        return redirectView;
-    }
+//    //카카오 로그아웃
+//    @RequestMapping(value="/logout")
+//    public RedirectView logout(HttpSession session) {
+//
+//        RedirectView redirectView = new RedirectView();
+//
+//        userService.kakaoLogout((String)session.getAttribute("access_Token"));
+//        session.removeAttribute("access_Token");
+//        session.removeAttribute("userId");
+//        redirectView.setUrl("http://localhost:3000/");
+//        return redirectView;
+//    }
 
 
     //회원 가입

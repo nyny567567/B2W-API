@@ -1,5 +1,6 @@
 package com.finalProject.stockbeginner.user.entity;
 
+import com.finalProject.stockbeginner.user.dto.request.KakaoRegisterRequestDTO;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
@@ -28,6 +29,9 @@ public class User  {
     @GenericGenerator(name = "system-uuid", strategy = "uuid")
     private String id;
 
+    @Column(name = "kakao_id")
+    private long kakaoId;
+
     @Column(name = "user_email", unique = true, nullable = false)
     private String email;
 
@@ -50,13 +54,11 @@ public class User  {
 
     private Integer age;
 
-    private String userKakaoIdentifier;
 
     private String career;
 
     private String image;
 
-    
 
 
 }
