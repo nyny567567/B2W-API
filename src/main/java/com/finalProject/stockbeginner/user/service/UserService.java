@@ -1,6 +1,5 @@
 package com.finalProject.stockbeginner.user.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.finalProject.stockbeginner.exception.DuplicatedEmailException;
 import com.finalProject.stockbeginner.exception.NoRegisteredArgumentsException;
 import com.finalProject.stockbeginner.user.auth.TokenProvider;
@@ -17,13 +16,11 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.BufferedReader;
@@ -108,18 +105,6 @@ public class UserService {
         return new LoginResponseDTO(user, token);
     }
 
-//    public LoginResponseDTO kakaoAuthenticate(LoginRequestDTO dto) {
-//
-//
-//        User user = userRepository.findByEmail(dto.getEmail())
-//                .orElseThrow(
-//                        () -> new RuntimeException("가입된 회원이 아닙니다!")
-//                );
-//
-//        String token = tokenProvider.createToken(user);
-//
-//        return new LoginResponseDTO(user, token);
-//    }
 
 
     //회원정보수정
@@ -248,6 +233,7 @@ public class UserService {
 //    }
 
 //    //카카오 로그인 정보 저장
+
     public HashMap<String, Object> getUserInfo (String access_Token) {
 
         //    요청하는 클라이언트마다 가진 정보가 다를 수 있기에 HashMap타입으로 선언
