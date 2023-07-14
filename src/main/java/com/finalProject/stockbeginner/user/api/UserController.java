@@ -4,6 +4,7 @@ import com.finalProject.stockbeginner.exception.DuplicatedEmailException;
 import com.finalProject.stockbeginner.exception.NoRegisteredArgumentsException;
 import com.finalProject.stockbeginner.user.auth.TokenUserInfo;
 import com.finalProject.stockbeginner.user.dto.UserUpdateDTO;
+import com.finalProject.stockbeginner.user.dto.request.FavoriteRequestDTO;
 import com.finalProject.stockbeginner.user.dto.request.LoginRequestDTO;
 import com.finalProject.stockbeginner.user.dto.request.UserRegisterRequestDTO;
 import com.finalProject.stockbeginner.user.dto.response.LoginResponseDTO;
@@ -265,6 +266,18 @@ public class UserController {
        userService.deleteUser(userInfo);
 
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/favorite")
+    public ResponseEntity<?> FavoriteToggle(@RequestBody FavoriteRequestDTO requestDTO){
+        String result = userService.favoriteToggle(requestDTO);
+        if(result.equals("delete")){
+            return ResponseEntity.ok().body("즐겨찾기 삭제 성공");
+        }else if(result.equals("save")){
+            return ResponseEntity.ok().body("즐겨찾기 추가 성공");
+        }else {
+            return ResponseEntity.badRequest().body("즐겨찾기 토글 실패");
+        }
     }
 }
 

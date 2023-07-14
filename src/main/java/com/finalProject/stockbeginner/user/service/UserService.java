@@ -5,11 +5,14 @@ import com.finalProject.stockbeginner.exception.NoRegisteredArgumentsException;
 import com.finalProject.stockbeginner.user.auth.TokenProvider;
 import com.finalProject.stockbeginner.user.auth.TokenUserInfo;
 import com.finalProject.stockbeginner.user.dto.UserUpdateDTO;
+import com.finalProject.stockbeginner.user.dto.request.FavoriteRequestDTO;
 import com.finalProject.stockbeginner.user.dto.request.LoginRequestDTO;
 import com.finalProject.stockbeginner.user.dto.request.UserRegisterRequestDTO;
 import com.finalProject.stockbeginner.user.dto.response.LoginResponseDTO;
 import com.finalProject.stockbeginner.user.dto.response.UserRegisterResponseDTO;
+import com.finalProject.stockbeginner.user.entity.FavoriteStock;
 import com.finalProject.stockbeginner.user.entity.User;
+import com.finalProject.stockbeginner.user.repository.FavoriteStockRepository;
 import com.finalProject.stockbeginner.user.repository.UserRepository;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -30,6 +33,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -40,6 +44,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder encoder;
     private final TokenProvider tokenProvider;
+    private final FavoriteStockRepository favoriteStockRepository;
 
 
     @Value("${upload.path}")
@@ -330,4 +335,19 @@ public class UserService {
 
     }
 
+    public String favoriteToggle(FavoriteRequestDTO requestDTO) {
+        User user = userRepository.findByEmail(requestDTO.getUserEmail()).orElseThrow();
+        Integer resultCnt = favoriteStockRepository.existsByUserAndStock(user, requestDTO.getStockCode());
+        if(resultCnt>0){
+            List<FavoriteStock> byUserAndStockCode = favoriteStockRepository.findByUserAndStockCode(user, requestDTO.getStockCode());
+            favoriteStockRepository.deleteAll(byUserAndStockCode);
+            return "delete";
+        }
+        FavoriteStock saved = favoriteStockRepository.save(FavoriteStock.builder()
+                .stockCode(requestDTO.getStockCode())
+                .stockName(requestDTO.getStockName())
+                .user(user)
+                .build());
+        return "save";
+    }
 }

@@ -32,7 +32,7 @@ class FavoriteStockRepositoryTest {
         String dummyStock = "하이닉스";
         User user = userRepository.findByEmail("abc123@naver.com").orElseThrow();
 
-        FavoriteStock dummy = FavoriteStock.builder().stockCode(dummyCode).StockName(dummyStock).user(user).build();
+        FavoriteStock dummy = FavoriteStock.builder().stockCode(dummyCode).stockName(dummyStock).user(user).build();
 
         //when
         FavoriteStock saved = favoriteStockRepository.save(dummy);
@@ -74,6 +74,19 @@ class FavoriteStockRepositoryTest {
         List<FavoriteStock> favoriteStock = favoriteStockRepository.findByUserAndStockCode(user, dummyCode);
         //then
         System.out.println("favoriteStock = " + favoriteStock);
+    }
+
+    @Test
+    @DisplayName("삭제")
+    void deleteTest2() {
+        //given
+        String dummyCode = "000660";
+        User user = userRepository.findByEmail("abc123@naver.com").orElseThrow();
+        //when
+        List<FavoriteStock> favoriteStock = favoriteStockRepository.findByUserAndStockCode(user, dummyCode);
+        favoriteStockRepository.deleteAll(favoriteStock);
+        //then
+
     }
 
 }

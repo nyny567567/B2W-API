@@ -26,7 +26,7 @@ public class FavoriteStock {
     private String stockCode;
 
     @Column(nullable = false)
-    private String StockName;
+    private String stockName;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
