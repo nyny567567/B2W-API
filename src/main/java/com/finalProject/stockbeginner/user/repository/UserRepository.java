@@ -17,6 +17,6 @@ public interface UserRepository extends JpaRepository<User, String> {
     // 닉네임 중복 체크
     boolean existsByNick(String nick);
 
-    Optional<Object> findUserByUserKakaoIdentifier(String kakaoIdentifier);
+    Optional<User> findUserByUserKakaoIdentifier(String kakaoIdentifier);
 }
 
