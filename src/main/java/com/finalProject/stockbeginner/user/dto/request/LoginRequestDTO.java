@@ -8,7 +8,6 @@ import javax.validation.constraints.NotBlank;
 @Getter
 @Setter
 @ToString @EqualsAndHashCode
-@NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class LoginRequestDTO {
@@ -19,5 +18,15 @@ public class LoginRequestDTO {
 
     @NotBlank
     private String password;
+
+    /** 아무 매개변수 없이 default값을 생성해주는 생성자 */
+    public  LoginRequestDTO(){
+
+        this.email = "1@naver.com";
+
+        this.password = "admin1987##";
+
+
+    }
 
 }

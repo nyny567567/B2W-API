@@ -2,6 +2,7 @@ package com.finalProject.stockbeginner.user.api;
 
 import com.finalProject.stockbeginner.exception.DuplicatedEmailException;
 import com.finalProject.stockbeginner.exception.NoRegisteredArgumentsException;
+import com.finalProject.stockbeginner.filter.JwtAuthFilter;
 import com.finalProject.stockbeginner.user.auth.TokenUserInfo;
 import com.finalProject.stockbeginner.user.dto.UserUpdateDTO;
 import com.finalProject.stockbeginner.user.dto.request.KakaoRegisterRequestDTO;
@@ -61,37 +62,21 @@ public class UserController {
         }
     }
 
-
     //카카오 로그인
     @GetMapping("/callback/kakao")
     public ResponseEntity<?> login(@RequestParam("code") String code, HttpSession session) throws Exception {
-
-        RedirectView redirectView = new RedirectView();
-
-        String access_Token = oAuthService.getKakaoAccessToken(code);
-        System.out.println("login Controller : " + access_Token);
-        LoginResponseDTO loginResponseDTO = userService.kakaoLogin(access_Token);
-        System.out.println("login Controller 리스폰스 디티오 : " + loginResponseDTO);
-        
-        redirectView.setUrl("http://localhost:3000/");
-
-        return ResponseEntity.ok().body(loginResponseDTO);
+        try {
+            String access_Token = oAuthService.getKakaoAccessToken(code);
+            System.out.println("login Controller : " + access_Token);
+            LoginResponseDTO responseDTO = userService.kakaoLogin(access_Token);
+            System.out.println("login Controller response dto : " + responseDTO);
+            return ResponseEntity.ok().body(responseDTO);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.badRequest()
+                    .body(e.getMessage());
+        }
     }
-
-//
-//    //카카오 로그아웃
-//    @RequestMapping(value="/logout")
-//    public RedirectView logout(HttpSession session) {
-//
-//        RedirectView redirectView = new RedirectView();
-//
-//        userService.kakaoLogout((String)session.getAttribute("access_Token"));
-//        session.removeAttribute("access_Token");
-//        session.removeAttribute("userId");
-//        redirectView.setUrl("http://localhost:3000/");
-//        return redirectView;
-//    }
-
 
     //회원 가입
     @PostMapping
@@ -204,18 +189,7 @@ public class UserController {
     }
 
 
-    //
-//        log.info("controller password, {}",requestDTO.getPassword());
-//        log.info("requestDTO: " + requestDTO);
-//        try {
-//            UserRegisterResponseDTO responseDTO = userService.register(requestDTO);
-//            return ResponseEntity.ok().body(responseDTO);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            return ResponseEntity.badRequest().body(e.getMessage());
-//        }
-//    }
-//
+
     //닉네임 중복 확인
     @GetMapping("/checknick")
     public ResponseEntity<?> checkNick(String nick) {

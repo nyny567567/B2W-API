@@ -35,6 +35,7 @@ public class User  {
     @Column(name = "user_email", unique = true, nullable = false)
     private String email;
 
+
     @Column(name = "user_pw", nullable = false)
     private String password;
 

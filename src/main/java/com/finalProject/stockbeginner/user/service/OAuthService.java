@@ -1,24 +1,14 @@
 package com.finalProject.stockbeginner.user.service;
 
-import com.finalProject.stockbeginner.exception.BaseException;
-import com.finalProject.stockbeginner.exception.BaseResponseCode;
 import com.finalProject.stockbeginner.user.auth.TokenProvider;
-import com.finalProject.stockbeginner.user.dto.request.KakaoRegisterRequestDTO;
-import com.finalProject.stockbeginner.user.dto.response.KakaoLoginResponseDTO;
-import com.finalProject.stockbeginner.user.entity.User;
 import com.finalProject.stockbeginner.user.repository.UserRepository;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
-import org.springframework.http.HttpStatus;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.List;
 
 @Service
 public class OAuthService {

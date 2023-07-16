@@ -12,12 +12,13 @@ import lombok.*;
 public class KakaoRegisterRequestDTO {
 
    private long kakaoId;
-   private String password = String.valueOf(-kakaoId+345);
+   private String password;
    private String nickname;
    private String image;
    private String email;
    private String gender;
    private String age;
+
 
 
 
