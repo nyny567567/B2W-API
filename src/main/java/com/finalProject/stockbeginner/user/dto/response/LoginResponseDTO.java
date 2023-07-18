@@ -21,6 +21,8 @@ public class LoginResponseDTO {
 //
 //    private String nick;
 
+    private String image;
+
 //    @JsonFormat(pattern = "yyyy-MM-dd")
 //    private LocalDateTime regDate;
 
@@ -29,6 +31,7 @@ public class LoginResponseDTO {
     public LoginResponseDTO(User user, String token){
         this.email = user.getEmail();
         this.token = token;
+        this.image = user.getImage();
     }
 
 

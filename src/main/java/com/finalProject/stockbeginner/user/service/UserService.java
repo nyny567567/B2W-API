@@ -230,6 +230,7 @@ public LoginResponseDTO kakaoLogin(String access_Token) {
                 LoginRequestDTO loginRequestDTO = new LoginRequestDTO();
                 loginRequestDTO.setEmail(dto.getEmail());
                 loginRequestDTO.setPassword(dto.getPassword());
+                loginRequestDTO.setImage(dto.getImage());
                 LoginResponseDTO kakaoDTO = kakaoAuthenticate(loginRequestDTO); //토큰발급
                 System.out.println("카카오 리스폰스: " + kakaoDTO);
                 return kakaoDTO;

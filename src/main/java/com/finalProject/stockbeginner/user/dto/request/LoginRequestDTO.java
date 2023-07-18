@@ -19,6 +19,8 @@ public class LoginRequestDTO {
     @NotBlank
     private String password;
 
+    private String image;
+
     /** 아무 매개변수 없이 default값을 생성해주는 생성자 */
     public  LoginRequestDTO(){
 
@@ -26,7 +28,10 @@ public class LoginRequestDTO {
 
         this.password = "admin1987##";
 
+        this.image = null;
+
 
     }
+
 
 }

@@ -20,9 +20,12 @@ public class KakaoLoginResponseDTO {
 
     private String token; // 인증 토큰
 
+    private String image;
+
     public KakaoLoginResponseDTO(User user, String token){
         this.email = user.getEmail();
         this.nick = user.getNick();
+        this.image = user.getImage();
         this.token = token;
     }
 

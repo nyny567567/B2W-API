@@ -36,7 +36,7 @@ public class OAuthService {
             StringBuilder sb = new StringBuilder();
             sb.append("grant_type=authorization_code");
             sb.append("&client_id=6d5436bbca874585f1aa1c07883d5eab");
-            sb.append("&redirect_uri=http://localhost:8181/api/user/callback/kakao");
+            sb.append("&redirect_uri=http://localhost:3000/api/user/callback/kakao");
             sb.append("&code=" + code);
             bw.write(sb.toString());
             bw.flush();
