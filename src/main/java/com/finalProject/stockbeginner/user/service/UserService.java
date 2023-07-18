@@ -7,12 +7,18 @@ import com.finalProject.stockbeginner.exception.Status;
 import com.finalProject.stockbeginner.user.auth.TokenProvider;
 import com.finalProject.stockbeginner.user.auth.TokenUserInfo;
 import com.finalProject.stockbeginner.user.dto.UserUpdateDTO;
+<<<<<<< HEAD
 import com.finalProject.stockbeginner.user.dto.request.KakaoRegisterRequestDTO;
+=======
+import com.finalProject.stockbeginner.user.dto.request.FavoriteRequestDTO;
+>>>>>>> 60865b6782b4e1596c9f52697fb668c6a897e191
 import com.finalProject.stockbeginner.user.dto.request.LoginRequestDTO;
 import com.finalProject.stockbeginner.user.dto.request.UserRegisterRequestDTO;
 import com.finalProject.stockbeginner.user.dto.response.LoginResponseDTO;
 import com.finalProject.stockbeginner.user.dto.response.UserRegisterResponseDTO;
+import com.finalProject.stockbeginner.user.entity.FavoriteStock;
 import com.finalProject.stockbeginner.user.entity.User;
+import com.finalProject.stockbeginner.user.repository.FavoriteStockRepository;
 import com.finalProject.stockbeginner.user.repository.UserRepository;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -37,7 +43,12 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
+<<<<<<< HEAD
 import java.util.Optional;
+=======
+import java.util.HashMap;
+import java.util.List;
+>>>>>>> 60865b6782b4e1596c9f52697fb668c6a897e191
 import java.util.UUID;
 
 @Service
@@ -48,6 +59,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder encoder;
     private final TokenProvider tokenProvider;
+    private final FavoriteStockRepository favoriteStockRepository;
 
 
     @Value("${upload.path}")
@@ -271,4 +283,19 @@ public LoginResponseDTO kakaoLogin(String access_Token) {
         return null;
     }
 
+    public String favoriteToggle(FavoriteRequestDTO requestDTO) {
+        User user = userRepository.findByEmail(requestDTO.getUserEmail()).orElseThrow();
+        Integer resultCnt = favoriteStockRepository.existsByUserAndStock(user, requestDTO.getStockCode());
+        if(resultCnt>0){
+            List<FavoriteStock> byUserAndStockCode = favoriteStockRepository.findByUserAndStockCode(user, requestDTO.getStockCode());
+            favoriteStockRepository.deleteAll(byUserAndStockCode);
+            return "delete";
+        }
+        FavoriteStock saved = favoriteStockRepository.save(FavoriteStock.builder()
+                .stockCode(requestDTO.getStockCode())
+                .stockName(requestDTO.getStockName())
+                .user(user)
+                .build());
+        return "save";
+    }
 }

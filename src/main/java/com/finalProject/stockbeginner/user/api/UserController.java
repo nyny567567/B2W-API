@@ -5,7 +5,11 @@ import com.finalProject.stockbeginner.exception.NoRegisteredArgumentsException;
 import com.finalProject.stockbeginner.filter.JwtAuthFilter;
 import com.finalProject.stockbeginner.user.auth.TokenUserInfo;
 import com.finalProject.stockbeginner.user.dto.UserUpdateDTO;
+<<<<<<< HEAD
 import com.finalProject.stockbeginner.user.dto.request.KakaoRegisterRequestDTO;
+=======
+import com.finalProject.stockbeginner.user.dto.request.FavoriteRequestDTO;
+>>>>>>> 60865b6782b4e1596c9f52697fb668c6a897e191
 import com.finalProject.stockbeginner.user.dto.request.LoginRequestDTO;
 import com.finalProject.stockbeginner.user.dto.request.UserRegisterRequestDTO;
 import com.finalProject.stockbeginner.user.dto.response.KakaoLoginResponseDTO;
@@ -235,6 +239,18 @@ public class UserController {
        userService.deleteUser(userInfo);
 
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/favorite")
+    public ResponseEntity<?> FavoriteToggle(@RequestBody FavoriteRequestDTO requestDTO){
+        String result = userService.favoriteToggle(requestDTO);
+        if(result.equals("delete")){
+            return ResponseEntity.ok().body("즐겨찾기 삭제 성공");
+        }else if(result.equals("save")){
+            return ResponseEntity.ok().body("즐겨찾기 추가 성공");
+        }else {
+            return ResponseEntity.badRequest().body("즐겨찾기 토글 실패");
+        }
     }
 }
 

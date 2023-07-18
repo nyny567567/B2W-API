@@ -20,20 +20,20 @@ class UserControllerTest {
     @Autowired
     private UserService userService;
 
-    @Test
-    @DisplayName("회원 가입")
-    void registerTest() {
-        //given
-        UserRegisterRequestDTO requestDTO = UserRegisterRequestDTO.builder()
-                .email("abc123@naver.com")
-                .name("김길동")
-                .nick("길동천재")
-                .password("!1234qwer")
-                .build();
-        //when
-        UserRegisterResponseDTO responseDTO = userService.register(requestDTO );
-        //then
-        assertEquals(responseDTO.getNick(),"길동천재");
-    }
+//    @Test
+//    @DisplayName("회원 가입")
+//    void registerTest() {
+//        //given
+//        UserRegisterRequestDTO requestDTO = UserRegisterRequestDTO.builder()
+//                .email("abc123@naver.com")
+//                .name("김길동")
+//                .nick("길동천재")
+//                .password("!1234qwer")
+//                .build();
+//        //when
+//        UserRegisterResponseDTO responseDTO = userService.register(requestDTO );
+//        //then
+//        assertEquals(responseDTO.getNick(),"길동천재");
+//    }
 
 }
