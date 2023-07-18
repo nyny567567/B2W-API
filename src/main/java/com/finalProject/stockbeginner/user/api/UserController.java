@@ -5,11 +5,7 @@ import com.finalProject.stockbeginner.exception.NoRegisteredArgumentsException;
 import com.finalProject.stockbeginner.filter.JwtAuthFilter;
 import com.finalProject.stockbeginner.user.auth.TokenUserInfo;
 import com.finalProject.stockbeginner.user.dto.UserUpdateDTO;
-<<<<<<< HEAD
-import com.finalProject.stockbeginner.user.dto.request.KakaoRegisterRequestDTO;
-=======
 import com.finalProject.stockbeginner.user.dto.request.FavoriteRequestDTO;
->>>>>>> 60865b6782b4e1596c9f52697fb668c6a897e191
 import com.finalProject.stockbeginner.user.dto.request.LoginRequestDTO;
 import com.finalProject.stockbeginner.user.dto.request.UserRegisterRequestDTO;
 import com.finalProject.stockbeginner.user.dto.response.KakaoLoginResponseDTO;

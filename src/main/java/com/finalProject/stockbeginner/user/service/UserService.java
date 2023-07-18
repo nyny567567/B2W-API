@@ -7,11 +7,8 @@ import com.finalProject.stockbeginner.exception.Status;
 import com.finalProject.stockbeginner.user.auth.TokenProvider;
 import com.finalProject.stockbeginner.user.auth.TokenUserInfo;
 import com.finalProject.stockbeginner.user.dto.UserUpdateDTO;
-<<<<<<< HEAD
-import com.finalProject.stockbeginner.user.dto.request.KakaoRegisterRequestDTO;
-=======
 import com.finalProject.stockbeginner.user.dto.request.FavoriteRequestDTO;
->>>>>>> 60865b6782b4e1596c9f52697fb668c6a897e191
+import com.finalProject.stockbeginner.user.dto.request.KakaoRegisterRequestDTO;
 import com.finalProject.stockbeginner.user.dto.request.LoginRequestDTO;
 import com.finalProject.stockbeginner.user.dto.request.UserRegisterRequestDTO;
 import com.finalProject.stockbeginner.user.dto.response.LoginResponseDTO;
@@ -43,12 +40,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
-<<<<<<< HEAD
-import java.util.Optional;
-=======
-import java.util.HashMap;
 import java.util.List;
->>>>>>> 60865b6782b4e1596c9f52697fb668c6a897e191
 import java.util.UUID;
 
 @Service
