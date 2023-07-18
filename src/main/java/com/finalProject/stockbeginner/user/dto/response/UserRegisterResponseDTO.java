@@ -24,12 +24,15 @@ public class UserRegisterResponseDTO {
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDateTime regDate;
 
+    private String image;
+
 
     public UserRegisterResponseDTO(User user){
         this.email = user.getEmail();
         this.name = user.getName();
         this.nick = user.getNick();
         this.regDate = user.getRegDate();
+        this.image = user.getImage();
 
     }
 }
