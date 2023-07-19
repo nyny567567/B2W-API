@@ -77,6 +77,22 @@ public class UserController {
                     .body(e.getMessage());
         }
     }
+    // 아이디 찾기
+    @PostMapping("/searchId")
+    public String searchId( String name, String phoneNumber
+    ) {
+        try {
+            String email
+                    = userService.searchId(name, phoneNumber);
+
+            return email;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "일치하는 회원정보가 없습니다.";
+
+        }
+    }
 
     //회원 가입
     @PostMapping
@@ -215,27 +231,27 @@ public class UserController {
     }
 
 
-    //회원 수정
-    @PatchMapping
-    public ResponseEntity<?> updateInfo(@Valid @RequestBody UserUpdateDTO dto, TokenUserInfo userInfo) {
-            try {
-              LoginResponseDTO responseDTO = userService.updateInfo(dto, userInfo);
-            return ResponseEntity.ok().body(responseDTO);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
-    }
+//    //회원 수정
+//    @PatchMapping
+//    public ResponseEntity<?> updateInfo(@Valid @RequestBody UserUpdateDTO dto, TokenUserInfo userInfo) {
+//            try {
+//              LoginResponseDTO responseDTO = userService.updateInfo(dto, userInfo);
+//            return ResponseEntity.ok().body(responseDTO);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            return ResponseEntity.badRequest().body(e.getMessage());
+//        }
+//    }
 
 
 
-    //회원 탈퇴
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteUser(TokenUserInfo userInfo) {
-       userService.deleteUser(userInfo);
-
-        return ResponseEntity.noContent().build();
-    }
+//    //회원 탈퇴
+//    @DeleteMapping("/{id}")
+//    public ResponseEntity<?> deleteUser(TokenUserInfo userInfo) {
+//       userService.deleteUser(userInfo);
+//
+//        return ResponseEntity.noContent().build();
+//    }
 
     @PostMapping("/favorite")
     public ResponseEntity<?> FavoriteToggle(@RequestBody FavoriteRequestDTO requestDTO){

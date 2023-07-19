@@ -33,6 +33,10 @@ public class UserRegisterRequestDTO {
     @Size(min = 2, max = 10)
     private String nick;
 
+    @NotBlank
+    @Size(max = 11)
+    private String phoneNumber;
+
     private String gender;
 
     @Size(max = 120)
@@ -44,6 +48,7 @@ public class UserRegisterRequestDTO {
 
     public User toEntity(){
         return User.builder()
+                .phoneNumber(this.phoneNumber)
                 .email(this.email)
                 .password(this.password)
                 .name(this.userName)

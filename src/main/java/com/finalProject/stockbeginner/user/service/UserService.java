@@ -33,6 +33,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.constraints.Email;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -41,6 +42,7 @@ import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -135,145 +137,157 @@ public class UserService {
         return new LoginResponseDTO(user, token);
     }
 
+    //아이디 찾기
+    public String searchId(String name, String phoneNumber) {
 
-    //회원정보수정
+        User user = userRepository.findByPhoneNumber(phoneNumber);
+        if (user != null) {
+            if (user.getName() == name) {
+                String email = user.getEmail();
+                return email;
+            }
+            return "일치하는 회원 정보가 없습니다";
 
-    @Transactional
-    public LoginResponseDTO updateInfo(UserUpdateDTO dto, TokenUserInfo userInfo) {
-        User user = userRepository
-                .findById(userInfo.getUserId())
-                .orElseThrow(() -> new RuntimeException("로그인 유저 정보가 없습니다."));
-
-        user.setPassword(dto.getPassword());
-        user.setNick(dto.getNick());
-        user.setImage(dto.getImage());
-
-        String token = tokenProvider.createToken(user);
-
-        return new LoginResponseDTO(user, token);
-
-    }
-
-
-    //회원 탈퇴
-    @Transactional
-    public void deleteUser(TokenUserInfo userInfo)
-            throws NoRegisteredArgumentsException, IllegalStateException {
-        if (userInfo.getUserId() == null) {
-            throw new RuntimeException("로그인 유저 정보가 없습니다.");
         }
-        userRepository.deleteById(userInfo.getUserId());
+        return "일치하는 회원 정보가 없습니다";
     }
 
-    //프로필 사진 업로드
-    public String uploadProfileImage(MultipartFile originalFile) throws IOException {
+//    //회원정보수정
+//
+//    @Transactional
+//    public void updateInfo(UserUpdateDTO dto, TokenUserInfo userInfo) {
+//        User user = userRepository
+//                .findById(userInfo.getUserId())
+//                .orElseThrow(() -> new RuntimeException("로그인 유저 정보가 없습니다."));
+//
+//        user.setPassword(dto.getPassword());
+//        user.setNick(dto.getNick());
+//        user.setImage(dto.getImage());
+//
+//        userRepository.delete(user);
+//        userRepository.save(user);
+//
+//    }
+//
+//
+//    //회원 탈퇴
+//    @Transactional
+//    public void deleteUser(TokenUserInfo userInfo)
+//            throws NoRegisteredArgumentsException, IllegalStateException {
+//        if (userInfo.getUserId() == null) {
+//            throw new RuntimeException("로그인 유저 정보가 없습니다.");
+//        }
+//        userRepository.deleteById(userInfo.getUserId());
+//    }
 
-        //루트 디렉토리가 존재하는 지 확인 후 존재하지 않으면 생성
-        File rootDir = new File(uploadRootPath);
-        if (!rootDir.exists()) rootDir.mkdir();
+        //프로필 사진 업로드
+        public String uploadProfileImage (MultipartFile originalFile) throws IOException {
 
-        // 파일명을 유니크하게 변경
-        String uniqueFileName = UUID.randomUUID()
-                + "_" + originalFile.getOriginalFilename();
+            //루트 디렉토리가 존재하는 지 확인 후 존재하지 않으면 생성
+            File rootDir = new File(uploadRootPath);
+            if (!rootDir.exists()) rootDir.mkdir();
 
-        // 파일을 저장
-        File uploadFile = new File(uploadRootPath + "/" + uniqueFileName);
-        originalFile.transferTo(uploadFile);
+            // 파일명을 유니크하게 변경
+            String uniqueFileName = UUID.randomUUID()
+                    + "_" + originalFile.getOriginalFilename();
 
-        return uniqueFileName;
-    }
+            // 파일을 저장
+            File uploadFile = new File(uploadRootPath + "/" + uniqueFileName);
+            originalFile.transferTo(uploadFile);
+
+            return uniqueFileName;
+        }
 
 
-    public String findProfilePath(String userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow();
-        return uploadRootPath + "/" + user.getImage();
-    }
+        public String findProfilePath (String userId){
+            User user = userRepository.findById(userId)
+                    .orElseThrow();
+            return uploadRootPath + "/" + user.getImage();
+        }
 
-    @ResponseBody
+        @ResponseBody
 //카카오 받은 정보 가입하고 dto로
-public LoginResponseDTO kakaoLogin(String access_Token) {
-        KakaoRegisterRequestDTO dto = new KakaoRegisterRequestDTO();
-        String reqURL = "https://kapi.kakao.com/v2/user/me";
-        try {
-            URL url = new URL(reqURL);
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("GET");
+        public LoginResponseDTO kakaoLogin (String access_Token){
+            KakaoRegisterRequestDTO dto = new KakaoRegisterRequestDTO();
+            String reqURL = "https://kapi.kakao.com/v2/user/me";
+            try {
+                URL url = new URL(reqURL);
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setRequestMethod("GET");
 
 //            //  요청에 필요한 Header에 포함될 내용
-            conn.setRequestProperty("Authorization", "Bearer " + access_Token);
+                conn.setRequestProperty("Authorization", "Bearer " + access_Token);
 
-            int responseCode = conn.getResponseCode();
-            System.out.println("responseCode : " + responseCode);
+                int responseCode = conn.getResponseCode();
+                System.out.println("responseCode : " + responseCode);
 
-            BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 
-            String line = "";
-            String result = "";
+                String line = "";
+                String result = "";
 
-            while ((line = br.readLine()) != null) {
-                result += line;
-            }
-            System.out.println("response body : " + result);
+                while ((line = br.readLine()) != null) {
+                    result += line;
+                }
+                System.out.println("response body : " + result);
 
-            JsonParser parser = new JsonParser();
-            JsonElement element = parser.parse(result);
+                JsonParser parser = new JsonParser();
+                JsonElement element = parser.parse(result);
 
-            JsonObject properties = element.getAsJsonObject().get("properties").getAsJsonObject();
-            JsonObject kakao_account = element.getAsJsonObject().get("kakao_account").getAsJsonObject();
+                JsonObject properties = element.getAsJsonObject().get("properties").getAsJsonObject();
+                JsonObject kakao_account = element.getAsJsonObject().get("kakao_account").getAsJsonObject();
 
-            long kakaoId = element.getAsJsonObject().get("id").getAsLong();
-            dto.setKakaoId(kakaoId);
-            String email = kakao_account.getAsJsonObject().get("email").getAsString();
-            email = org.springframework.web.util.HtmlUtils.htmlEscape(email); //특수문자처리
-            dto.setEmail((email));
+                long kakaoId = element.getAsJsonObject().get("id").getAsLong();
+                dto.setKakaoId(kakaoId);
+                String email = kakao_account.getAsJsonObject().get("email").getAsString();
+                email = org.springframework.web.util.HtmlUtils.htmlEscape(email); //특수문자처리
+                dto.setEmail((email));
 
 
-
-            if (userRepository.existsByKakaoId(kakaoId)) { //카카오 가입 이미 한 사람이면
-                LoginRequestDTO loginRequestDTO = new LoginRequestDTO();
-                loginRequestDTO.setEmail(dto.getEmail());
-                loginRequestDTO.setPassword(dto.getPassword());
-                loginRequestDTO.setImage(dto.getImage());
-                LoginResponseDTO kakaoDTO = kakaoAuthenticate(loginRequestDTO); //토큰발급
-                System.out.println("카카오 리스폰스: " + kakaoDTO);
-                return kakaoDTO;
-            } else { //가입안하고
-                if (email == null) { //이메일 제공동의안하면
-                    redirect();
-                } else {  //동의했는데
-                    if (userRepository.existsByEmail(email)) { //기존에 일반회원으로 가입한 사람
+                if (userRepository.existsByKakaoId(kakaoId)) { //카카오 가입 이미 한 사람이면
+                    LoginRequestDTO loginRequestDTO = new LoginRequestDTO();
+                    loginRequestDTO.setEmail(dto.getEmail());
+                    loginRequestDTO.setPassword(dto.getPassword());
+                    loginRequestDTO.setImage(dto.getImage());
+                    LoginResponseDTO kakaoDTO = kakaoAuthenticate(loginRequestDTO); //토큰발급
+                    System.out.println("카카오 리스폰스: " + kakaoDTO);
+                    return kakaoDTO;
+                } else { //가입안하고
+                    if (email == null) { //이메일 제공동의안하면
                         redirect();
-                    } else {//가입안했으면 가입시켜준다
-                        String nickname = properties.getAsJsonObject().get("nickname").getAsString();
-                        dto.setNickname(nickname);
-                        String image = properties.getAsJsonObject().get("profile_image").getAsString();
-                        dto.setImage(image);
-                        String gender = kakao_account.getAsJsonObject().get("gender").getAsString();
-                        dto.setGender(gender);
-                        String age = kakao_account.getAsJsonObject().get("age_range").getAsString();
-                        dto.setAge(age);
-                        System.out.println("카카오 로그인 저장 : " + dto);
-                        User kakaoUser = dto.toEntity();
-                        userRepository.save(kakaoUser);  //레파지토리에 저장하고
-                        LoginRequestDTO loginRequestDTO = new LoginRequestDTO();
-                        loginRequestDTO.setEmail(kakaoUser.getEmail());
-                        loginRequestDTO.setPassword(kakaoUser.getPassword()); //리퀘스트에 이메일 패스워드 넣어준다
-                        System.out.println("카카오 리퀘스트 : " + loginRequestDTO);
+                    } else {  //동의했는데
+                        if (userRepository.existsByEmail(email)) { //기존에 일반회원으로 가입한 사람
+                            redirect();
+                        } else {//가입안했으면 가입시켜준다
+                            String nickname = properties.getAsJsonObject().get("nickname").getAsString();
+                            dto.setNickname(nickname);
+                            String image = properties.getAsJsonObject().get("profile_image").getAsString();
+                            dto.setImage(image);
+                            String gender = kakao_account.getAsJsonObject().get("gender").getAsString();
+                            dto.setGender(gender);
+                            String age = kakao_account.getAsJsonObject().get("age_range").getAsString();
+                            dto.setAge(age);
+                            System.out.println("카카오 로그인 저장 : " + dto);
+                            User kakaoUser = dto.toEntity();
+                            userRepository.save(kakaoUser);  //레파지토리에 저장하고
+                            LoginRequestDTO loginRequestDTO = new LoginRequestDTO();
+                            loginRequestDTO.setEmail(kakaoUser.getEmail());
+                            loginRequestDTO.setPassword(kakaoUser.getPassword()); //리퀘스트에 이메일 패스워드 넣어준다
+                            System.out.println("카카오 리퀘스트 : " + loginRequestDTO);
 
-                        LoginResponseDTO kakaoDTO = kakaoAuthenticate(loginRequestDTO); //토큰발급
-                        System.out.println("카카오 리스폰스: " + kakaoDTO);
-                        return kakaoDTO;
+                            LoginResponseDTO kakaoDTO = kakaoAuthenticate(loginRequestDTO); //토큰발급
+                            System.out.println("카카오 리스폰스: " + kakaoDTO);
+                            return kakaoDTO;
 
+                        }
                     }
                 }
+            } catch (IOException e) {
+                e.printStackTrace();
             }
+            return null;
         }
-         catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
+
 
     public String favoriteToggle(FavoriteRequestDTO requestDTO) {
         User user = userRepository.findByEmail(requestDTO.getUserEmail()).orElseThrow();
