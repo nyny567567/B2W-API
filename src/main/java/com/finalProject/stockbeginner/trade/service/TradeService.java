@@ -11,6 +11,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -81,6 +83,11 @@ public class TradeService {
         } catch (Exception e) {
             return "fail";
         }
+    }
+
+    public List<TradeHistory> getTradeHistory(String email){
+        User user = userRepository.findByEmail(email).orElseThrow();
+        return tradeHistoryRepository.findByUser(user);
     }
 
 
