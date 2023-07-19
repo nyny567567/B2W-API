@@ -2,6 +2,7 @@ package com.finalProject.stockbeginner.user.service;
 
 import com.finalProject.stockbeginner.exception.DuplicatedEmailException;
 import com.finalProject.stockbeginner.exception.NoRegisteredArgumentsException;
+import com.finalProject.stockbeginner.trade.dto.response.RankResponseDTO;
 import com.finalProject.stockbeginner.trade.entity.Stock;
 import com.finalProject.stockbeginner.trade.repository.StockRepository;
 import com.finalProject.stockbeginner.user.auth.TokenProvider;
@@ -35,6 +36,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
@@ -359,5 +361,19 @@ public class UserService {
         User user = userRepository.findByEmail(email).orElseThrow();
         List<Stock> stockList = stockRepository.getByUser(user);
         return new MyInfoResponseDTO(user,stockList);
+    }
+
+    public List<RankResponseDTO> getRank(){
+        List<User> ranks = userRepository.findAllOrderByMoneyDesc();
+        List<RankResponseDTO> responseDTOS = new ArrayList<>();
+        Long i = 1L;
+        for (User rank : ranks) {
+            RankResponseDTO dto = RankResponseDTO.builder()
+                    .rank(i).userName(rank.getName()).money(rank.getMoney())
+                    .build();
+            i++;
+            responseDTOS.add(dto);
+        }
+        return responseDTOS;
     }
 }

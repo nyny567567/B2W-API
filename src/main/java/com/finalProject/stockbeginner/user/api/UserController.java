@@ -2,6 +2,7 @@ package com.finalProject.stockbeginner.user.api;
 
 import com.finalProject.stockbeginner.exception.DuplicatedEmailException;
 import com.finalProject.stockbeginner.exception.NoRegisteredArgumentsException;
+import com.finalProject.stockbeginner.trade.dto.response.RankResponseDTO;
 import com.finalProject.stockbeginner.user.auth.TokenUserInfo;
 import com.finalProject.stockbeginner.user.dto.UserUpdateDTO;
 import com.finalProject.stockbeginner.user.dto.request.FavoriteRequestDTO;
@@ -30,6 +31,7 @@ import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.io.File;
 import java.util.HashMap;
+import java.util.List;
 
 @RestController
 @Slf4j
@@ -285,6 +287,12 @@ public class UserController {
     public ResponseEntity<?> getUserInfo(@PathVariable String email){
         MyInfoResponseDTO myInfo = userService.getMyInfo(email);
         return ResponseEntity.ok().body(myInfo);
+    }
+
+    @GetMapping("/rank")
+    public ResponseEntity<?> getRankAll(){
+        List<RankResponseDTO> ranks = userService.getRank();
+        return ResponseEntity.ok().body(ranks);
     }
 }
 

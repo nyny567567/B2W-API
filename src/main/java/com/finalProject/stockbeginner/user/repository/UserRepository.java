@@ -4,6 +4,7 @@ import com.finalProject.stockbeginner.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, String> {
@@ -19,5 +20,7 @@ public interface UserRepository extends JpaRepository<User, String> {
     boolean existsByNick(String nick);
 
     Optional<User> findUserByUserKakaoIdentifier(String kakaoIdentifier);
+
+    List<User> findAllOrderByMoneyDesc();
 }
 
