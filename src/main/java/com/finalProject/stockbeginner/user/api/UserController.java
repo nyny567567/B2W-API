@@ -8,6 +8,7 @@ import com.finalProject.stockbeginner.user.dto.request.FavoriteRequestDTO;
 import com.finalProject.stockbeginner.user.dto.request.LoginRequestDTO;
 import com.finalProject.stockbeginner.user.dto.request.UserRegisterRequestDTO;
 import com.finalProject.stockbeginner.user.dto.response.LoginResponseDTO;
+import com.finalProject.stockbeginner.user.dto.response.MyInfoResponseDTO;
 import com.finalProject.stockbeginner.user.dto.response.UserRegisterResponseDTO;
 import com.finalProject.stockbeginner.user.service.OAuthService;
 import com.finalProject.stockbeginner.user.service.UserService;
@@ -278,6 +279,12 @@ public class UserController {
         }else {
             return ResponseEntity.badRequest().body("즐겨찾기 토글 실패");
         }
+    }
+
+    @GetMapping("/myInfo/{email}")
+    public ResponseEntity<?> getUserInfo(@PathVariable String email){
+        MyInfoResponseDTO myInfo = userService.getMyInfo(email);
+        return ResponseEntity.ok().body(myInfo);
     }
 }
 

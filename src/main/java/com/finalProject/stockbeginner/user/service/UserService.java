@@ -2,6 +2,8 @@ package com.finalProject.stockbeginner.user.service;
 
 import com.finalProject.stockbeginner.exception.DuplicatedEmailException;
 import com.finalProject.stockbeginner.exception.NoRegisteredArgumentsException;
+import com.finalProject.stockbeginner.trade.entity.Stock;
+import com.finalProject.stockbeginner.trade.repository.StockRepository;
 import com.finalProject.stockbeginner.user.auth.TokenProvider;
 import com.finalProject.stockbeginner.user.auth.TokenUserInfo;
 import com.finalProject.stockbeginner.user.dto.UserUpdateDTO;
@@ -9,6 +11,7 @@ import com.finalProject.stockbeginner.user.dto.request.FavoriteRequestDTO;
 import com.finalProject.stockbeginner.user.dto.request.LoginRequestDTO;
 import com.finalProject.stockbeginner.user.dto.request.UserRegisterRequestDTO;
 import com.finalProject.stockbeginner.user.dto.response.LoginResponseDTO;
+import com.finalProject.stockbeginner.user.dto.response.MyInfoResponseDTO;
 import com.finalProject.stockbeginner.user.dto.response.UserRegisterResponseDTO;
 import com.finalProject.stockbeginner.user.entity.FavoriteStock;
 import com.finalProject.stockbeginner.user.entity.User;
@@ -45,6 +48,7 @@ public class UserService {
     private final PasswordEncoder encoder;
     private final TokenProvider tokenProvider;
     private final FavoriteStockRepository favoriteStockRepository;
+    private final StockRepository stockRepository;
 
 
     @Value("${upload.path}")
@@ -349,5 +353,11 @@ public class UserService {
                 .user(user)
                 .build());
         return "save";
+    }
+
+    public MyInfoResponseDTO getMyInfo(String email) {
+        User user = userRepository.findByEmail(email).orElseThrow();
+        List<Stock> stockList = stockRepository.getByUser(user);
+        return new MyInfoResponseDTO(user,stockList);
     }
 }
