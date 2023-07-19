@@ -7,10 +7,7 @@ import com.finalProject.stockbeginner.exception.Status;
 import com.finalProject.stockbeginner.user.auth.TokenProvider;
 import com.finalProject.stockbeginner.user.auth.TokenUserInfo;
 import com.finalProject.stockbeginner.user.dto.UserUpdateDTO;
-import com.finalProject.stockbeginner.user.dto.request.FavoriteRequestDTO;
-import com.finalProject.stockbeginner.user.dto.request.KakaoRegisterRequestDTO;
-import com.finalProject.stockbeginner.user.dto.request.LoginRequestDTO;
-import com.finalProject.stockbeginner.user.dto.request.UserRegisterRequestDTO;
+import com.finalProject.stockbeginner.user.dto.request.*;
 import com.finalProject.stockbeginner.user.dto.response.LoginResponseDTO;
 import com.finalProject.stockbeginner.user.dto.response.UserRegisterResponseDTO;
 import com.finalProject.stockbeginner.user.entity.FavoriteStock;
@@ -42,6 +39,7 @@ import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -138,12 +136,14 @@ public class UserService {
     }
 
     //아이디 찾기
-    public String searchId(String name, String phoneNumber) {
+    public String searchId(SearchIdRequestDTO dto) {
 
-        User user = userRepository.findByPhoneNumber(phoneNumber);
+
+        User user = userRepository.findByPhoneNumber(dto.getPhoneNumber());
         if (user != null) {
-            if (user.getName() == name) {
+            if (Objects.equals(user.getName(), dto.getName())) {
                 String email = user.getEmail();
+                log.info("이메일 :" + email);
                 return email;
             }
             return "일치하는 회원 정보가 없습니다";

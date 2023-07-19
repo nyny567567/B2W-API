@@ -7,6 +7,7 @@ import com.finalProject.stockbeginner.user.auth.TokenUserInfo;
 import com.finalProject.stockbeginner.user.dto.UserUpdateDTO;
 import com.finalProject.stockbeginner.user.dto.request.FavoriteRequestDTO;
 import com.finalProject.stockbeginner.user.dto.request.LoginRequestDTO;
+import com.finalProject.stockbeginner.user.dto.request.SearchIdRequestDTO;
 import com.finalProject.stockbeginner.user.dto.request.UserRegisterRequestDTO;
 import com.finalProject.stockbeginner.user.dto.response.KakaoLoginResponseDTO;
 import com.finalProject.stockbeginner.user.dto.response.LoginResponseDTO;
@@ -79,13 +80,18 @@ public class UserController {
     }
     // 아이디 찾기
     @PostMapping("/searchId")
-    public String searchId( String name, String phoneNumber
-    ) {
-        try {
-            String email
-                    = userService.searchId(name, phoneNumber);
+    public String searchId(@Validated @RequestBody SearchIdRequestDTO dto) {
 
+
+        try {
+            log.info(dto.toString());
+
+            String email
+                    = userService.searchId(dto);
+
+            log.info("컨트롤러 이메일 :" + email);
             return email;
+
 
         } catch (Exception e) {
             e.printStackTrace();
