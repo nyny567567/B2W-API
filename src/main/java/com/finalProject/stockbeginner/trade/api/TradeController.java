@@ -1,6 +1,6 @@
 package com.finalProject.stockbeginner.trade.api;
 
-import com.finalProject.stockbeginner.trade.dto.request.BuyRequestDTO;
+import com.finalProject.stockbeginner.trade.dto.request.TradeRequestDTO;
 import com.finalProject.stockbeginner.trade.service.TradeService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,9 +19,19 @@ public class TradeController {
     private final TradeService tradeService;
 
     @PostMapping("/buy")
-    public ResponseEntity<?> buying(@RequestBody  BuyRequestDTO requestDTO){
+    public ResponseEntity<?> buying(@RequestBody TradeRequestDTO requestDTO){
         try {
             String result = tradeService.buyStock(requestDTO);
+            return ResponseEntity.ok().body(result);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/sell")
+    public ResponseEntity<?> selling(@RequestBody TradeRequestDTO requestDTO){
+        try {
+            String result = tradeService.sellStock(requestDTO);
             return ResponseEntity.ok().body(result);
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());

@@ -1,6 +1,5 @@
 package com.finalProject.stockbeginner.trade.dto.request;
 
-import com.finalProject.stockbeginner.trade.entity.Stock;
 import lombok.*;
 
 @Getter
@@ -9,7 +8,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-public class BuyRequestDTO {
+public class TradeRequestDTO {
 
     private String email;
     private String stockName;
