@@ -46,7 +46,7 @@ class FavoriteStockRepositoryTest {
     void duplicateTest() {
         //given
         String dummyCode = "000660";
-        User user = userRepository.findByEmail("abc123@naver.com").orElseThrow();
+        User user = userRepository.findByEmail("iu@naver.com").orElseThrow();
         //when
         Integer isExists = favoriteStockRepository.existsByUserAndStock(user, dummyCode);
         //then
@@ -87,6 +87,17 @@ class FavoriteStockRepositoryTest {
         favoriteStockRepository.deleteAll(favoriteStock);
         //then
 
+    }
+
+    @Test
+    @DisplayName("즐찾 리스트 반환")
+    void favoriteListTest() {
+        //given
+        User user = userRepository.findByEmail("iu@naver.com").orElseThrow();
+        //when
+        List<FavoriteStock> favoriteStock = favoriteStockRepository.findByUser(user);
+        //then
+        System.out.println("favoriteStock = " + favoriteStock);
     }
 
 }

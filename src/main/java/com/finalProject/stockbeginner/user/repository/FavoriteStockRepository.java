@@ -15,4 +15,7 @@ public interface FavoriteStockRepository extends JpaRepository<FavoriteStock, St
     Integer existsByUserAndStock(@Param("user") User user,@Param("stockCode") String stockCode);
 
     List<FavoriteStock> findByUserAndStockCode(@Param("user") User user,@Param("stockCode") String stockCode);
+
+//    @Query("SELECT f.stockCode, f.stockName FROM FavoriteStock f WHERE f.user = :user")
+    List<FavoriteStock> findByUser(@Param("user") User user);
 }
