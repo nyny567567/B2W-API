@@ -2,6 +2,7 @@ package com.finalProject.stockbeginner.user.api;
 
 import com.finalProject.stockbeginner.exception.DuplicatedEmailException;
 import com.finalProject.stockbeginner.exception.NoRegisteredArgumentsException;
+import com.finalProject.stockbeginner.trade.dto.response.RankResponseDTO;
 import com.finalProject.stockbeginner.filter.JwtAuthFilter;
 import com.finalProject.stockbeginner.user.auth.TokenUserInfo;
 import com.finalProject.stockbeginner.user.dto.UserUpdateDTO;
@@ -9,14 +10,18 @@ import com.finalProject.stockbeginner.user.dto.request.FavoriteRequestDTO;
 import com.finalProject.stockbeginner.user.dto.request.LoginRequestDTO;
 import com.finalProject.stockbeginner.user.dto.request.SearchIdRequestDTO;
 import com.finalProject.stockbeginner.user.dto.request.UserRegisterRequestDTO;
+import com.finalProject.stockbeginner.user.dto.response.FavoriteListResponseDTO;
 import com.finalProject.stockbeginner.user.dto.response.KakaoLoginResponseDTO;
 import com.finalProject.stockbeginner.user.dto.response.LoginResponseDTO;
+import com.finalProject.stockbeginner.user.dto.response.MyInfoResponseDTO;
 import com.finalProject.stockbeginner.user.dto.response.UserRegisterResponseDTO;
+import com.finalProject.stockbeginner.user.entity.FavoriteStock;
 import com.finalProject.stockbeginner.user.service.OAuthService;
 import com.finalProject.stockbeginner.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoProperties;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -32,6 +37,7 @@ import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.io.File;
 import java.util.HashMap;
+import java.util.List;
 
 @RestController
 @Slf4j
@@ -261,14 +267,36 @@ public class UserController {
 
     @PostMapping("/favorite")
     public ResponseEntity<?> FavoriteToggle(@RequestBody FavoriteRequestDTO requestDTO){
-        String result = userService.favoriteToggle(requestDTO);
-        if(result.equals("delete")){
-            return ResponseEntity.ok().body("즐겨찾기 삭제 성공");
-        }else if(result.equals("save")){
-            return ResponseEntity.ok().body("즐겨찾기 추가 성공");
-        }else {
-            return ResponseEntity.badRequest().body("즐겨찾기 토글 실패");
+        try {
+            List<FavoriteListResponseDTO> result = userService.favoriteToggle(requestDTO);
+            return ResponseEntity.ok().body(result);
+        }catch(Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
+    @GetMapping("/myInfo/{email}")
+    public ResponseEntity<?> getUserInfo(@PathVariable String email){
+        MyInfoResponseDTO myInfo = userService.getMyInfo(email);
+        return ResponseEntity.ok().body(myInfo);
+    }
+
+    @GetMapping("/rank")
+    public ResponseEntity<?> getRankAll(){
+        List<RankResponseDTO> ranks = userService.getRank();
+        return ResponseEntity.ok().body(ranks);
+    }
+
+    @GetMapping("/favorite/{email}")
+    public ResponseEntity<?> favoriteList(@PathVariable String email) {
+        try {
+            List<FavoriteListResponseDTO> favoriteStockList = userService.favoriteList(email);
+            return ResponseEntity.ok().body(favoriteStockList);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+
 }
 

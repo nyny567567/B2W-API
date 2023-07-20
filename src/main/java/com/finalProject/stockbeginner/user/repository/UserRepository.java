@@ -3,6 +3,7 @@ package com.finalProject.stockbeginner.user.repository;
 import com.finalProject.stockbeginner.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, String> {
@@ -17,6 +18,7 @@ public interface UserRepository extends JpaRepository<User, String> {
     // 닉네임 중복 체크
     boolean existsByNick(String nick);
 
+    List<User> findAllByOrderByMoneyDesc();
     //카카오유저 중복확인
     Optional<User> findByKakaoId(long kakaoId);
 

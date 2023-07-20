@@ -2,13 +2,18 @@ package com.finalProject.stockbeginner.user.service;
 
 import com.finalProject.stockbeginner.exception.DuplicatedEmailException;
 import com.finalProject.stockbeginner.exception.NoRegisteredArgumentsException;
-import com.finalProject.stockbeginner.exception.NotFoundException;
-import com.finalProject.stockbeginner.exception.Status;
+import com.finalProject.stockbeginner.trade.dto.response.RankResponseDTO;
+import com.finalProject.stockbeginner.trade.entity.Stock;
+import com.finalProject.stockbeginner.trade.repository.StockRepository;
 import com.finalProject.stockbeginner.user.auth.TokenProvider;
-import com.finalProject.stockbeginner.user.auth.TokenUserInfo;
-import com.finalProject.stockbeginner.user.dto.UserUpdateDTO;
 import com.finalProject.stockbeginner.user.dto.request.*;
+import com.finalProject.stockbeginner.user.dto.request.FavoriteRequestDTO;
+import com.finalProject.stockbeginner.user.dto.request.KakaoRegisterRequestDTO;
+import com.finalProject.stockbeginner.user.dto.request.LoginRequestDTO;
+import com.finalProject.stockbeginner.user.dto.request.UserRegisterRequestDTO;
+import com.finalProject.stockbeginner.user.dto.response.FavoriteListResponseDTO;
 import com.finalProject.stockbeginner.user.dto.response.LoginResponseDTO;
+import com.finalProject.stockbeginner.user.dto.response.MyInfoResponseDTO;
 import com.finalProject.stockbeginner.user.dto.response.UserRegisterResponseDTO;
 import com.finalProject.stockbeginner.user.entity.FavoriteStock;
 import com.finalProject.stockbeginner.user.entity.User;
@@ -38,9 +43,9 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -52,6 +57,7 @@ public class UserService {
     private final PasswordEncoder encoder;
     private final TokenProvider tokenProvider;
     private final FavoriteStockRepository favoriteStockRepository;
+    private final StockRepository stockRepository;
 
 
     @Value("${upload.path}")
@@ -146,10 +152,10 @@ public class UserService {
                 log.info("이메일 :" + email);
                 return email;
             }
-            return "일치하는 회원 정보가 없습니다";
+            return "일치하는 회원 정보가 없음";
 
         }
-        return "일치하는 회원 정보가 없습니다";
+        return "일치하는 회원 정보가 없음";
     }
 
 //    //회원정보수정
@@ -289,19 +295,70 @@ public class UserService {
         }
 
 
-    public String favoriteToggle(FavoriteRequestDTO requestDTO) {
+    public List<FavoriteListResponseDTO> favoriteToggle(FavoriteRequestDTO requestDTO) {
         User user = userRepository.findByEmail(requestDTO.getUserEmail()).orElseThrow();
         Integer resultCnt = favoriteStockRepository.existsByUserAndStock(user, requestDTO.getStockCode());
         if(resultCnt>0){
             List<FavoriteStock> byUserAndStockCode = favoriteStockRepository.findByUserAndStockCode(user, requestDTO.getStockCode());
             favoriteStockRepository.deleteAll(byUserAndStockCode);
-            return "delete";
+        } else {
+            FavoriteStock saved = favoriteStockRepository.save(FavoriteStock.builder()
+                    .stockCode(requestDTO.getStockCode())
+                    .stockName(requestDTO.getStockName())
+                    .user(user)
+                    .build());
         }
-        FavoriteStock saved = favoriteStockRepository.save(FavoriteStock.builder()
-                .stockCode(requestDTO.getStockCode())
-                .stockName(requestDTO.getStockName())
-                .user(user)
-                .build());
-        return "save";
+
+        List<FavoriteStock> list = favoriteStockRepository.findByUser(user);
+        List<FavoriteListResponseDTO> responseDTOList = new ArrayList<>();
+
+        for (FavoriteStock favoriteStock : list) {
+            FavoriteListResponseDTO dto = FavoriteListResponseDTO.builder()
+                    .stockCode(favoriteStock.getStockCode())
+                    .stockName(favoriteStock.getStockName())
+                    .build();
+            responseDTOList.add(dto);
+        }
+        return responseDTOList;
+
     }
+
+    public MyInfoResponseDTO getMyInfo(String email) {
+        User user = userRepository.findByEmail(email).orElseThrow();
+        List<Stock> stockList = stockRepository.getByUser(user);
+        return new MyInfoResponseDTO(user,stockList);
+    }
+
+    public List<RankResponseDTO> getRank(){
+        List<User> ranks = userRepository.findAllByOrderByMoneyDesc();
+        List<RankResponseDTO> responseDTOS = new ArrayList<>();
+        Long i = 1L;
+        for (User rank : ranks) {
+            RankResponseDTO dto = RankResponseDTO.builder()
+                    .rank(i).userName(rank.getName()).money(rank.getMoney())
+                    .build();
+            i++;
+            responseDTOS.add(dto);
+        }
+        return responseDTOS;
+    }
+
+    public List<FavoriteListResponseDTO> favoriteList(String email) {
+        User user = userRepository.findByEmail(email).orElseThrow();
+        List<FavoriteStock> list = favoriteStockRepository.findByUser(user);
+        List<FavoriteListResponseDTO> responseDTOList = new ArrayList<>();
+
+        for (FavoriteStock favoriteStock : list) {
+            FavoriteListResponseDTO dto = FavoriteListResponseDTO.builder()
+                    .stockCode(favoriteStock.getStockCode())
+                    .stockName(favoriteStock.getStockName())
+                    .build();
+            responseDTOList.add(dto);
+        }
+        return responseDTOList;
+
+
+    }
+
+
 }
