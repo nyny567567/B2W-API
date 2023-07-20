@@ -17,20 +17,22 @@ public class LoginResponseDTO {
 
     private String email;
 
-    private String name;
+//    private String name;
+//
+//    private String nick;
 
-    private String nick;
+    private String image;
 
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    private LocalDateTime regDate;
+//    @JsonFormat(pattern = "yyyy-MM-dd")
+//    private LocalDateTime regDate;
 
     private String token; // 인증 토큰
 
     public LoginResponseDTO(User user, String token){
         this.email = user.getEmail();
-        this.name = user.getName();
-        this.nick = user.getNick();
-        this.regDate = user.getRegDate();
         this.token = token;
+        this.image = user.getImage();
     }
+
+
 }

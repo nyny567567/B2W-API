@@ -3,11 +3,13 @@ package com.finalProject.stockbeginner.user.api;
 import com.finalProject.stockbeginner.exception.DuplicatedEmailException;
 import com.finalProject.stockbeginner.exception.NoRegisteredArgumentsException;
 import com.finalProject.stockbeginner.trade.dto.response.RankResponseDTO;
+import com.finalProject.stockbeginner.filter.JwtAuthFilter;
 import com.finalProject.stockbeginner.user.auth.TokenUserInfo;
 import com.finalProject.stockbeginner.user.dto.UserUpdateDTO;
 import com.finalProject.stockbeginner.user.dto.request.FavoriteRequestDTO;
 import com.finalProject.stockbeginner.user.dto.request.LoginRequestDTO;
 import com.finalProject.stockbeginner.user.dto.request.UserRegisterRequestDTO;
+import com.finalProject.stockbeginner.user.dto.response.KakaoLoginResponseDTO;
 import com.finalProject.stockbeginner.user.dto.response.LoginResponseDTO;
 import com.finalProject.stockbeginner.user.dto.response.MyInfoResponseDTO;
 import com.finalProject.stockbeginner.user.dto.response.UserRegisterResponseDTO;
@@ -63,43 +65,21 @@ public class UserController {
         }
     }
 
-
     //카카오 로그인
     @GetMapping("/callback/kakao")
-    public RedirectView login(@RequestParam("code") String code, HttpSession session) throws Exception {
-
-        RedirectView redirectView = new RedirectView();
-
-        String access_Token = oAuthService.getKakaoAccessToken(code);
-        HashMap<String, Object> userInfo = userService.getUserInfo(access_Token);
-        System.out.println("login Controller : " + userInfo);
-
-//        //    클라이언트의 이메일이 존재할 때 세션에 해당 이메일과 토큰 등록
-//        if (userInfo.get("email") != null) {
-//            session.setAttribute("userId", userInfo.get("email"));
-//            session.setAttribute("access_Token", access_Token);
-
-//
-//        }
-        redirectView.setUrl("http://localhost:3000/");
-
-        return redirectView;
+    public ResponseEntity<?> login(@RequestParam("code") String code, HttpSession session) throws Exception {
+        try {
+            String access_Token = oAuthService.getKakaoAccessToken(code);
+            System.out.println("login Controller : " + access_Token);
+            LoginResponseDTO responseDTO = userService.kakaoLogin(access_Token);
+            System.out.println("login Controller response dto : " + responseDTO);
+            return ResponseEntity.ok().body(responseDTO);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.badRequest()
+                    .body(e.getMessage());
+        }
     }
-
-
-    //카카오 로그아웃
-    @RequestMapping(value="/logout")
-    public RedirectView logout(HttpSession session) {
-
-        RedirectView redirectView = new RedirectView();
-
-        userService.kakaoLogout((String)session.getAttribute("access_Token"));
-        session.removeAttribute("access_Token");
-        session.removeAttribute("userId");
-        redirectView.setUrl("http://localhost:3000/");
-        return redirectView;
-    }
-
 
     //회원 가입
     @PostMapping
@@ -212,18 +192,7 @@ public class UserController {
     }
 
 
-    //
-//        log.info("controller password, {}",requestDTO.getPassword());
-//        log.info("requestDTO: " + requestDTO);
-//        try {
-//            UserRegisterResponseDTO responseDTO = userService.register(requestDTO);
-//            return ResponseEntity.ok().body(responseDTO);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            return ResponseEntity.badRequest().body(e.getMessage());
-//        }
-//    }
-//
+
     //닉네임 중복 확인
     @GetMapping("/checknick")
     public ResponseEntity<?> checkNick(String nick) {

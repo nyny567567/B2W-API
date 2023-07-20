@@ -2,6 +2,10 @@
 server:
   port: 8181
 
+  error:
+    include-message: always
+    include-binding-errors: always
+
 
 spring:
   datasource:
