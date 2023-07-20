@@ -11,6 +11,7 @@ import com.finalProject.stockbeginner.user.dto.request.FavoriteRequestDTO;
 import com.finalProject.stockbeginner.user.dto.request.KakaoRegisterRequestDTO;
 import com.finalProject.stockbeginner.user.dto.request.LoginRequestDTO;
 import com.finalProject.stockbeginner.user.dto.request.UserRegisterRequestDTO;
+import com.finalProject.stockbeginner.user.dto.response.FavoriteListResponseDTO;
 import com.finalProject.stockbeginner.user.dto.response.LoginResponseDTO;
 import com.finalProject.stockbeginner.user.dto.response.UserRegisterResponseDTO;
 import com.finalProject.stockbeginner.user.entity.FavoriteStock;
@@ -40,7 +41,9 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -275,19 +278,51 @@ public LoginResponseDTO kakaoLogin(String access_Token) {
         return null;
     }
 
-    public String favoriteToggle(FavoriteRequestDTO requestDTO) {
+    public List<FavoriteListResponseDTO> favoriteToggle(FavoriteRequestDTO requestDTO) {
         User user = userRepository.findByEmail(requestDTO.getUserEmail()).orElseThrow();
         Integer resultCnt = favoriteStockRepository.existsByUserAndStock(user, requestDTO.getStockCode());
         if(resultCnt>0){
             List<FavoriteStock> byUserAndStockCode = favoriteStockRepository.findByUserAndStockCode(user, requestDTO.getStockCode());
             favoriteStockRepository.deleteAll(byUserAndStockCode);
-            return "delete";
+        } else {
+            FavoriteStock saved = favoriteStockRepository.save(FavoriteStock.builder()
+                    .stockCode(requestDTO.getStockCode())
+                    .stockName(requestDTO.getStockName())
+                    .user(user)
+                    .build());
         }
-        FavoriteStock saved = favoriteStockRepository.save(FavoriteStock.builder()
-                .stockCode(requestDTO.getStockCode())
-                .stockName(requestDTO.getStockName())
-                .user(user)
-                .build());
-        return "save";
+
+        List<FavoriteStock> list = favoriteStockRepository.findByUser(user);
+        List<FavoriteListResponseDTO> responseDTOList = new ArrayList<>();
+
+        for (FavoriteStock favoriteStock : list) {
+            FavoriteListResponseDTO dto = FavoriteListResponseDTO.builder()
+                    .stockCode(favoriteStock.getStockCode())
+                    .stockName(favoriteStock.getStockName())
+                    .build();
+            responseDTOList.add(dto);
+        }
+        return responseDTOList;
+
     }
+
+    public List<FavoriteListResponseDTO> favoriteList(String email) {
+        User user = userRepository.findByEmail(email).orElseThrow();
+        List<FavoriteStock> list = favoriteStockRepository.findByUser(user);
+        List<FavoriteListResponseDTO> responseDTOList = new ArrayList<>();
+
+        for (FavoriteStock favoriteStock : list) {
+            FavoriteListResponseDTO dto = FavoriteListResponseDTO.builder()
+                    .stockCode(favoriteStock.getStockCode())
+                    .stockName(favoriteStock.getStockName())
+                    .build();
+            responseDTOList.add(dto);
+        }
+        return responseDTOList;
+
+
+    }
+
+
+
 }
