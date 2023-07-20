@@ -364,7 +364,7 @@ public class UserService {
     }
 
     public List<RankResponseDTO> getRank(){
-        List<User> ranks = userRepository.findAllOrderByMoneyDesc();
+        List<User> ranks = userRepository.findAllByOrderByMoneyDesc();
         List<RankResponseDTO> responseDTOS = new ArrayList<>();
         Long i = 1L;
         for (User rank : ranks) {

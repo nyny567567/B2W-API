@@ -21,6 +21,6 @@ public interface UserRepository extends JpaRepository<User, String> {
 
     Optional<User> findUserByUserKakaoIdentifier(String kakaoIdentifier);
 
-    List<User> findAllOrderByMoneyDesc();
+    List<User> findAllByOrderByMoneyDesc();
 }
 
