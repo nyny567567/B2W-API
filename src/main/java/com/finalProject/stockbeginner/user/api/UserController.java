@@ -6,16 +6,14 @@ import com.finalProject.stockbeginner.trade.dto.response.RankResponseDTO;
 import com.finalProject.stockbeginner.filter.JwtAuthFilter;
 import com.finalProject.stockbeginner.user.auth.TokenUserInfo;
 import com.finalProject.stockbeginner.user.dto.UserUpdateDTO;
-import com.finalProject.stockbeginner.user.dto.request.FavoriteRequestDTO;
-import com.finalProject.stockbeginner.user.dto.request.LoginRequestDTO;
-import com.finalProject.stockbeginner.user.dto.request.SearchIdRequestDTO;
-import com.finalProject.stockbeginner.user.dto.request.UserRegisterRequestDTO;
+import com.finalProject.stockbeginner.user.dto.request.*;
 import com.finalProject.stockbeginner.user.dto.response.FavoriteListResponseDTO;
 import com.finalProject.stockbeginner.user.dto.response.KakaoLoginResponseDTO;
 import com.finalProject.stockbeginner.user.dto.response.LoginResponseDTO;
 import com.finalProject.stockbeginner.user.dto.response.MyInfoResponseDTO;
 import com.finalProject.stockbeginner.user.dto.response.UserRegisterResponseDTO;
 import com.finalProject.stockbeginner.user.entity.FavoriteStock;
+import com.finalProject.stockbeginner.user.entity.User;
 import com.finalProject.stockbeginner.user.service.OAuthService;
 import com.finalProject.stockbeginner.user.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +24,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
@@ -38,6 +37,7 @@ import javax.validation.Valid;
 import java.io.File;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @Slf4j
@@ -105,6 +105,45 @@ public class UserController {
 
         }
     }
+
+    //비밀번호 변경
+//    @Transactional
+    @PostMapping("/sendEmail")
+    public String sendEmail(@Validated @RequestBody ChangePasswordRequestDTO dto) {
+
+        try {
+
+            if(userService.sendEmail(dto) != null) {
+                MailDTO maildto = userService.createMailAndChangePassword(dto);
+                userService.mailSend(maildto);
+                String answer = "이메일로 임시비밀번호가 발송되었습니다";
+
+                return answer;
+            } String answer = "일치하는 회원정보가 없습니다";
+            return answer;
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            String answer = "다시 시도해주세요";
+            return answer;
+
+        }
+    }
+
+
+//        User user = userRepository.findByPhoneNumber(dto.getPhoneNumber());
+//        if (user != null) {
+//            if (Objects.equals(user.getEmail(), dto.getEmail())) {
+//                String email = user.getEmail();
+//                log.info("이메일 :" + email);
+//                return "이메일로 임시비밀번호가 발급되었습니다";
+//            }
+//            return "일치하는 회원 정보가 없습니다";
+//
+//        }
+//        return "일치하는 회원 정보가 없습니다";
+//    }
 
     //회원 가입
     @PostMapping
