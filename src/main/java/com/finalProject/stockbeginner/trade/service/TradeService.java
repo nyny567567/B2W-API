@@ -67,11 +67,15 @@ public class TradeService {
                 newStock = Stock.builder()
                         .user(user).id(existingStock.getId())
                         .stockId(requestDTO.getStockId()).stockName(requestDTO.getStockName())
-                        .price(existingStock.getPrice()-requestDTO.getPrice())
+                        .price(existingStock.getPrice()-(existingStock.getPrice()/existingStock.getQuantity()*requestDTO.getQuantity()))
                         .quantity(existingStock.getQuantity()-requestDTO.getQuantity())
                         .build();
             }
-            Stock savedStock = stockRepository.save(newStock);
+            if(newStock.getQuantity()==0){
+                stockRepository.delete(newStock);
+            }else{
+                Stock savedStock = stockRepository.save(newStock);
+            }
             user.setMoney(user.getMoney()+ requestDTO.getPrice());
             User savedUser = userRepository.save(user);
             TradeHistory history = TradeHistory.builder()

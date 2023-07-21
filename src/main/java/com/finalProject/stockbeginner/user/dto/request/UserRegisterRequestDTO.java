@@ -46,6 +46,7 @@ public class UserRegisterRequestDTO {
 
     private String image;
 
+    private String mbti;
     public User toEntity(){
         return User.builder()
                 .phoneNumber(this.phoneNumber)
@@ -57,6 +58,7 @@ public class UserRegisterRequestDTO {
                 .age(this.age)
                 .career(this.career)
                 .image((this.image))
+                .mbti(this.mbti)
                 .build();
     }
 
