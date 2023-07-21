@@ -243,6 +243,7 @@ public class UserController {
         return ResponseEntity.noContent().build();
     }
 
+    //즐겨찾기 추가(별 모양 클릭)
     @PostMapping("/favorite")
     public ResponseEntity<?> FavoriteToggle(@RequestBody FavoriteRequestDTO requestDTO){
         try {
@@ -253,18 +254,21 @@ public class UserController {
         }
     }
 
+    //내정보 받아오기
     @GetMapping("/myInfo/{email}")
     public ResponseEntity<?> getUserInfo(@PathVariable String email){
         MyInfoResponseDTO myInfo = userService.getMyInfo(email);
         return ResponseEntity.ok().body(myInfo);
     }
 
+    //전체회원의 보유 금액
     @GetMapping("/rank")
     public ResponseEntity<?> getRankAll(){
         List<RankResponseDTO> ranks = userService.getRank();
         return ResponseEntity.ok().body(ranks);
     }
 
+    //즐겨찾기 리스트 불러오기
     @GetMapping("/favorite/{email}")
     public ResponseEntity<?> favoriteList(@PathVariable String email) {
         try {
