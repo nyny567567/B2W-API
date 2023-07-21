@@ -60,6 +60,6 @@ public class User  {
 
     private String image;
 
-
+    private String mbti;
 
 }

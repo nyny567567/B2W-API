@@ -24,6 +24,7 @@ public class MyInfoResponseDTO {
     private Long money;
     private String gender;
     private List<MyStock> myStocks;
+    private String mbti;
 
     public MyInfoResponseDTO(User user, List<Stock> stocks){
         ArrayList<MyStock> myStocks = new ArrayList<>();
@@ -45,6 +46,7 @@ public class MyInfoResponseDTO {
         this.money = user.getMoney();
         this.gender = user.getGender();
         this.myStocks = myStocks;
+        this.mbti = user.getMbti();
     }
 
 }
