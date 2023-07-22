@@ -1,6 +1,7 @@
 package com.finalProject.stockbeginner.trade.api;
 
 import com.finalProject.stockbeginner.trade.dto.request.TradeRequestDTO;
+import com.finalProject.stockbeginner.trade.dto.response.RankResponseDTO;
 import com.finalProject.stockbeginner.trade.entity.TradeHistory;
 import com.finalProject.stockbeginner.trade.service.TradeService;
 import lombok.RequiredArgsConstructor;
@@ -9,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @Slf4j
@@ -43,6 +45,28 @@ public class TradeController {
         try {
             List<TradeHistory> histories = tradeService.getTradeHistory(email);
             return ResponseEntity.ok().body(histories);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/rank")
+    public ResponseEntity<?> getAllRank(){
+        try {
+            List<RankResponseDTO> rankResponseDTOList = tradeService.getAllRank();
+            return ResponseEntity.ok().body(rankResponseDTOList);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/rank/{email}")
+    public ResponseEntity<?> getOneRank(@PathVariable String email){
+        try {
+            List<RankResponseDTO> rankResponseDTOList = tradeService.getAllRank();
+            Optional<RankResponseDTO> responseDTO = rankResponseDTOList.stream()
+                    .filter(dto -> dto.getEmail().equals(email)).findFirst();
+            return ResponseEntity.ok().body(responseDTO);
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }

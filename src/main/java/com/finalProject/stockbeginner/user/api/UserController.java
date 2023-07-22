@@ -259,12 +259,6 @@ public class UserController {
         return ResponseEntity.ok().body(myInfo);
     }
 
-    @GetMapping("/rank")
-    public ResponseEntity<?> getRankAll(){
-        List<RankResponseDTO> ranks = userService.getRank();
-        return ResponseEntity.ok().body(ranks);
-    }
-
     @GetMapping("/favorite/{email}")
     public ResponseEntity<?> favoriteList(@PathVariable String email) {
         try {

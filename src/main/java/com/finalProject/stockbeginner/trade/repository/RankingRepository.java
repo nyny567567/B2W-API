@@ -1,0 +1,11 @@
+package com.finalProject.stockbeginner.trade.repository;
+
+import com.finalProject.stockbeginner.trade.entity.Ranking;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+
+import java.util.List;
+
+public interface RankingRepository extends JpaRepository<Ranking, String> {
+
+}
