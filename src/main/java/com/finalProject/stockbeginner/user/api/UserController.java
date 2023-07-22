@@ -3,52 +3,36 @@ package com.finalProject.stockbeginner.user.api;
 import com.finalProject.stockbeginner.exception.DuplicatedEmailException;
 import com.finalProject.stockbeginner.exception.NoRegisteredArgumentsException;
 import com.finalProject.stockbeginner.trade.dto.response.RankResponseDTO;
-import com.finalProject.stockbeginner.filter.JwtAuthFilter;
 import com.finalProject.stockbeginner.user.auth.TokenUserInfo;
-import com.finalProject.stockbeginner.user.dto.UserUpdateDTO;
 import com.finalProject.stockbeginner.user.dto.request.*;
 import com.finalProject.stockbeginner.user.dto.response.FavoriteListResponseDTO;
-import com.finalProject.stockbeginner.user.dto.response.KakaoLoginResponseDTO;
 import com.finalProject.stockbeginner.user.dto.response.LoginResponseDTO;
 import com.finalProject.stockbeginner.user.dto.response.MyInfoResponseDTO;
 import com.finalProject.stockbeginner.user.dto.response.UserRegisterResponseDTO;
-import com.finalProject.stockbeginner.user.entity.FavoriteStock;
-import com.finalProject.stockbeginner.user.entity.User;
 import com.finalProject.stockbeginner.user.service.OAuthService;
 import com.finalProject.stockbeginner.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoProperties;
-import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.view.RedirectView;
-
 import javax.servlet.http.HttpSession;
-import javax.validation.Valid;
 import java.io.File;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
 
 @RestController
 @Slf4j
 @RequiredArgsConstructor
 @RequestMapping("/api/user")
 public class UserController {
-
     private final UserService userService;
     private final OAuthService oAuthService;
-
-
 
     //로그인 요청 처리
     @PostMapping("/login")
@@ -58,14 +42,11 @@ public class UserController {
         try {
             LoginResponseDTO responseDTO
                     = userService.authenticate(dto);
-
             return ResponseEntity.ok().body(responseDTO);
-
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.badRequest()
                     .body(e.getMessage());
-
         }
     }
 
@@ -84,25 +65,19 @@ public class UserController {
                     .body(e.getMessage());
         }
     }
+
     // 아이디 찾기
     @PostMapping("/searchId")
     public String searchId(@Validated @RequestBody SearchIdRequestDTO dto) {
-
-
         try {
             log.info(dto.toString());
-
             String email
                     = userService.searchId(dto);
-
             log.info("컨트롤러 이메일 :" + email);
             return email;
-
-
         } catch (Exception e) {
             e.printStackTrace();
-            return "일치하는 회원정보가 없습니다.";
-
+            return "일치하는 회원 정보가 없음";
         }
     }
 
@@ -110,69 +85,44 @@ public class UserController {
 //    @Transactional
     @PostMapping("/sendEmail")
     public String sendEmail(@Validated @RequestBody ChangePasswordRequestDTO dto) {
-
         try {
-
-            if(userService.sendEmail(dto) != null) {
+            if (userService.sendEmail(dto) != null) {
                 MailDTO maildto = userService.createMailAndChangePassword(dto);
                 userService.mailSend(maildto);
                 String answer = "이메일로 임시비밀번호가 발송되었습니다";
-
                 return answer;
-            } String answer = "일치하는 회원정보가 없습니다";
+            }
+            String answer = "일치하는 회원정보가 없습니다";
             return answer;
-
-
         } catch (Exception e) {
             e.printStackTrace();
             String answer = "다시 시도해주세요";
             return answer;
-
         }
     }
 
-
-//        User user = userRepository.findByPhoneNumber(dto.getPhoneNumber());
-//        if (user != null) {
-//            if (Objects.equals(user.getEmail(), dto.getEmail())) {
-//                String email = user.getEmail();
-//                log.info("이메일 :" + email);
-//                return "이메일로 임시비밀번호가 발급되었습니다";
-//            }
-//            return "일치하는 회원 정보가 없습니다";
-//
-//        }
-//        return "일치하는 회원 정보가 없습니다";
-//    }
 
     //회원 가입
     @PostMapping
     public ResponseEntity<?> register(@RequestPart("user") UserRegisterRequestDTO requestDTO,
                                       @RequestPart(value = "profileImage", required = false) MultipartFile profileImg,
                                       BindingResult result) {
-
         {
             log.info("/api/auth POST - {}", requestDTO);
-
             if (result.hasErrors()) {
                 log.warn(result.toString());
                 return ResponseEntity.badRequest()
                         .body(result.getFieldError());
             }
-
             try {
-
                 String uploadedFilePath = null;
                 if (profileImg != null) {
                     log.info("attached file name: {}", profileImg.getOriginalFilename());
                     uploadedFilePath = userService.uploadProfileImage(profileImg);
                 }
-
-
                 UserRegisterResponseDTO responseDTO = userService.register(requestDTO, uploadedFilePath);
                 return ResponseEntity.ok()
                         .body(responseDTO);
-
             } catch (NoRegisteredArgumentsException e) {
                 log.warn("필수 가입 정보를 전달받지 못했습니다.");
                 return ResponseEntity.badRequest()
@@ -189,7 +139,6 @@ public class UserController {
         }
     }
 
-
     //프로필 이미지 관련
     // 프로필 사진 이미지 데이터를 클라이언트에게 응답 처리
     @GetMapping("/load-profile")
@@ -197,53 +146,37 @@ public class UserController {
             @AuthenticationPrincipal TokenUserInfo userInfo
     ) {
         log.info("/api/auth/load-profile - GET!, user: {}", userInfo.getEmail());
-
         try {
-            //클라이언트가 요청한 프로필 사진을 응답해야 함.
-            //1. 프로필 사진의 경로를 얻어야 함.
-            String filePath
+              String filePath
                     = userService.findProfilePath(userInfo.getUserId());
-
-            //2. 얻어낸 파일 경로를 통해서 실제 파일 데이터 로드하기
             File profileFile = new File(filePath);
-
             if (!profileFile.exists()) {
                 return ResponseEntity.notFound().build();
             }
-
-            // 해당 경로에 저장된 파일을 바이트배열로 직렬화 해서 리턴
             byte[] fileData = FileCopyUtils.copyToByteArray(profileFile);
-
-            //3. 응답 헤더에 컨턴츠 타입을 설정.
             HttpHeaders headers = new HttpHeaders();
             MediaType contentType = findExtensionAndGetMediaType(filePath);
-            if(contentType == null) {
+            if (contentType == null) {
                 return ResponseEntity.internalServerError()
                         .body("발견된 파일은 이미지 파일이 아닙니다.");
             }
             headers.setContentType(contentType);
-
             return ResponseEntity.ok()
                     .headers(headers)
                     .body(fileData);
-
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.internalServerError()
                     .body("파일을 찾을 수 없습니다.");
         }
-
     }
 
     private MediaType findExtensionAndGetMediaType(String filePath) {
-
-        // 파일 경로에서 확장자 추출하기
-        // C:/todo_upload/asjkldlkaslkdjc_abc.jpg
         String ext
                 = filePath.substring(filePath.lastIndexOf(".") + 1);
-
         switch (ext.toUpperCase()) {
-            case "JPG": case "JPEG":
+            case "JPG":
+            case "JPEG":
                 return MediaType.IMAGE_JPEG;
             case "PNG":
                 return MediaType.IMAGE_PNG;
@@ -252,79 +185,52 @@ public class UserController {
             default:
                 return null;
         }
-
     }
-
-
 
     //닉네임 중복 확인
     @GetMapping("/checknick")
     public ResponseEntity<?> checkNick(String nick) {
-        if(nick.trim().equals("")) {
+        if (nick.trim().equals("")) {
             return ResponseEntity.badRequest()
                     .body("닉네임이 없습니다!");
         }
         boolean resultFlag = userService.isDuplicateNick(nick);
         return ResponseEntity.ok().body(resultFlag);
-
     }
 
     //이메일 중복 확인
     @GetMapping("/check")
     public ResponseEntity<?> check(String email) {
-        if(email.trim().equals("")) {
+        if (email.trim().equals("")) {
             return ResponseEntity.badRequest()
                     .body("이메일이 없습니다!");
         }
         boolean resultFlag = userService.isDuplicate(email);
         return ResponseEntity.ok().body(resultFlag);
-
     }
 
 
-//    //회원 수정
-//    @PatchMapping
-//    public ResponseEntity<?> updateInfo(@Valid @RequestBody UserUpdateDTO dto, TokenUserInfo userInfo) {
-//            try {
-//              LoginResponseDTO responseDTO = userService.updateInfo(dto, userInfo);
-//            return ResponseEntity.ok().body(responseDTO);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            return ResponseEntity.badRequest().body(e.getMessage());
-//        }
-//    }
-
-
-
-//    //회원 탈퇴
-//    @DeleteMapping("/{id}")
-//    public ResponseEntity<?> deleteUser(TokenUserInfo userInfo) {
-//       userService.deleteUser(userInfo);
-//
-//        return ResponseEntity.noContent().build();
-//    }
-
     //즐겨찾기 추가(별 모양 클릭)
     @PostMapping("/favorite")
-    public ResponseEntity<?> FavoriteToggle(@RequestBody FavoriteRequestDTO requestDTO){
+    public ResponseEntity<?> FavoriteToggle(@RequestBody FavoriteRequestDTO requestDTO) {
         try {
             List<FavoriteListResponseDTO> result = userService.favoriteToggle(requestDTO);
             return ResponseEntity.ok().body(result);
-        }catch(Exception e) {
+        } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
     //내정보 받아오기
     @GetMapping("/myInfo/{email}")
-    public ResponseEntity<?> getUserInfo(@PathVariable String email){
+    public ResponseEntity<?> getUserInfo(@PathVariable String email) {
         MyInfoResponseDTO myInfo = userService.getMyInfo(email);
         return ResponseEntity.ok().body(myInfo);
     }
 
     //전체회원의 보유 금액
     @GetMapping("/rank")
-    public ResponseEntity<?> getRankAll(){
+    public ResponseEntity<?> getRankAll() {
         List<RankResponseDTO> ranks = userService.getRank();
         return ResponseEntity.ok().body(ranks);
     }
@@ -342,4 +248,3 @@ public class UserController {
 
 
 }
-

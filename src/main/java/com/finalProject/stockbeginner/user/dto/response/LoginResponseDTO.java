@@ -17,14 +17,7 @@ public class LoginResponseDTO {
 
     private String email;
 
-//    private String name;
-//
-//    private String nick;
-
     private String image;
-
-//    @JsonFormat(pattern = "yyyy-MM-dd")
-//    private LocalDateTime regDate;
 
     private String token; // 인증 토큰
 
