@@ -28,5 +28,4 @@ public class Ranking {
     @Id
     private String email;
 
-
 }

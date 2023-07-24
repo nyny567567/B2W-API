@@ -20,6 +20,7 @@ public class TradeController {
 
     private final TradeService tradeService;
 
+    //매수 요청
     @PostMapping("/buy")
     public ResponseEntity<?> buying(@RequestBody TradeRequestDTO requestDTO){
         try {
@@ -30,6 +31,7 @@ public class TradeController {
         }
     }
 
+    //매도 요청
     @PostMapping("/sell")
     public ResponseEntity<?> selling(@RequestBody TradeRequestDTO requestDTO){
         try {
@@ -40,6 +42,7 @@ public class TradeController {
         }
     }
 
+    //구매내역 불러오기
     @GetMapping("/history/{email}")
     public ResponseEntity<?> getHistory(@PathVariable String email){
         try {
