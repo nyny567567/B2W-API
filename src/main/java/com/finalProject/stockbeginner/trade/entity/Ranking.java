@@ -4,6 +4,7 @@ import com.finalProject.stockbeginner.user.entity.User;
 import lombok.*;
 
 import javax.persistence.Entity;
+import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Table;
 
@@ -19,7 +20,7 @@ import javax.persistence.Table;
 public class Ranking {
 
 
-
+    @Id
     private String id;
 
     private User user;
