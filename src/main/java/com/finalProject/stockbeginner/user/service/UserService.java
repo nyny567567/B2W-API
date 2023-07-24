@@ -31,6 +31,7 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
@@ -401,5 +402,10 @@ public class UserService {
 
     }
 
-
+//    //등급 승급 수정중
+//    @Transactional
+//    public void changeRole(Long money) {
+//        User user = userRepository.findByMoney();
+//        user.changeRole();
+//    }
 }

@@ -26,5 +26,7 @@ public interface UserRepository extends JpaRepository<User, String> {
     boolean existsByKakaoId(long kakaoId);
 
     User findByPhoneNumber(String phoneNumber);
+
+    User findByMoney();
 }
 
