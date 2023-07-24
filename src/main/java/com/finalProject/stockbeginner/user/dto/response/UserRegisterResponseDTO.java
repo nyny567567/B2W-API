@@ -26,8 +26,11 @@ public class UserRegisterResponseDTO {
 
     private String image;
 
+    private String phoneNumber;
+
 
     public UserRegisterResponseDTO(User user){
+        this.phoneNumber = user.getPhoneNumber();
         this.email = user.getEmail();
         this.name = user.getName();
         this.nick = user.getNick();

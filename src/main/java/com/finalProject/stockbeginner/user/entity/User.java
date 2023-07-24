@@ -51,6 +51,9 @@ public class User  {
     @CreationTimestamp
     private LocalDateTime regDate;
 
+    @Column(nullable = false, unique = true)
+    private String phoneNumber;
+
     private String gender;
 
     private Integer age;
