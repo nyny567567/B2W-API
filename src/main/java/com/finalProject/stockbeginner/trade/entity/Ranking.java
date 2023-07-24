@@ -2,29 +2,30 @@ package com.finalProject.stockbeginner.trade.entity;
 
 import com.finalProject.stockbeginner.user.entity.User;
 import lombok.*;
-
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.Table;
+import org.hibernate.annotations.GenericGenerator;
+import javax.persistence.*;
 
 @Getter
-@Setter
 @ToString
-@EqualsAndHashCode(of = "id")
+@EqualsAndHashCode(of = "email")
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 @Entity
-@Table(name = "trade_ranking")
+
+@Table(name = "ranking")
 public class Ranking {
+//    @Id
+//    @GeneratedValue(generator = "system-uuid")
+//    @GenericGenerator(name = "system-uuid", strategy = "uuid")
+//    private String id;
 
-
-    @Id
-    private String id;
-
-    private User user;
-
+    @Column(nullable = false)
     private Long profit;
+
+    @Column(nullable = false)
+    private String userName;
+    @Id
+    private String email;
 
 }
