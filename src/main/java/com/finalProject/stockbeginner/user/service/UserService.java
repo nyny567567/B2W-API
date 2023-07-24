@@ -370,20 +370,6 @@ public class UserService {
         return new MyInfoResponseDTO(user, stockList);
     }
 
-    public List<RankResponseDTO> getRank() {
-        List<User> ranks = userRepository.findAllByOrderByMoneyDesc();
-        List<RankResponseDTO> responseDTOS = new ArrayList<>();
-        Long i = 1L;
-        for (User rank : ranks) {
-            RankResponseDTO dto = RankResponseDTO.builder()
-                    .rank(i).userName(rank.getName())
-                    .build();
-            i++;
-            responseDTOS.add(dto);
-        }
-        return responseDTOS;
-    }
-
     public List<FavoriteListResponseDTO> favoriteList(String email) {
         User user = userRepository.findByEmail(email).orElseThrow();
         List<FavoriteStock> list = favoriteStockRepository.findByUser(user);
