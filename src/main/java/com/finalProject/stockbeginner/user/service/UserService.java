@@ -1,13 +1,11 @@
 package com.finalProject.stockbeginner.user.service;
 
 import com.finalProject.stockbeginner.exception.DuplicatedEmailException;
-import com.finalProject.stockbeginner.exception.NoRegisteredArgumentsException;
 import com.finalProject.stockbeginner.trade.dto.response.RankResponseDTO;
 import com.finalProject.stockbeginner.trade.entity.Stock;
 import com.finalProject.stockbeginner.trade.repository.StockRepository;
 import com.finalProject.stockbeginner.user.auth.TokenProvider;
-import com.finalProject.stockbeginner.user.auth.TokenUserInfo;
-import com.finalProject.stockbeginner.user.dto.UserUpdateDTO;
+import com.finalProject.stockbeginner.user.dto.request.*;
 import com.finalProject.stockbeginner.user.dto.request.FavoriteRequestDTO;
 import com.finalProject.stockbeginner.user.dto.request.KakaoRegisterRequestDTO;
 import com.finalProject.stockbeginner.user.dto.request.LoginRequestDTO;
@@ -29,13 +27,15 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.constraints.Email;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -43,10 +43,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -58,6 +55,7 @@ public class UserService {
     private final TokenProvider tokenProvider;
     private final FavoriteStockRepository favoriteStockRepository;
     private final StockRepository stockRepository;
+    private final JavaMailSender mailSender;
 
 
     @Value("${upload.path}")
@@ -70,7 +68,6 @@ public class UserService {
         headers.setLocation(URI.create("http://localhost:3000/"));
         return new ResponseEntity<>(headers, HttpStatus.MOVED_PERMANENTLY);
     }
-
 
 
     //회원 가입
@@ -135,41 +132,100 @@ public class UserService {
                 );
 
         String token = tokenProvider.createToken(user);
-        token= org.springframework.web.util.HtmlUtils.htmlEscape(token); //특수문자처리
+        token = org.springframework.web.util.HtmlUtils.htmlEscape(token); //특수문자처리
 
 
         return new LoginResponseDTO(user, token);
     }
 
-
-    //회원정보수정
-
-    @Transactional
-    public LoginResponseDTO updateInfo(UserUpdateDTO dto, TokenUserInfo userInfo) {
-        User user = userRepository
-                .findById(userInfo.getUserId())
-                .orElseThrow(() -> new RuntimeException("로그인 유저 정보가 없습니다."));
-
-        user.setPassword(dto.getPassword());
-        user.setNick(dto.getNick());
-        user.setImage(dto.getImage());
-
-        String token = tokenProvider.createToken(user);
-
-        return new LoginResponseDTO(user, token);
-
-    }
+    //아이디 찾기
+    public String searchId(SearchIdRequestDTO dto) {
 
 
-    //회원 탈퇴
-    @Transactional
-    public void deleteUser(TokenUserInfo userInfo)
-            throws NoRegisteredArgumentsException, IllegalStateException {
-        if (userInfo.getUserId() == null) {
-            throw new RuntimeException("로그인 유저 정보가 없습니다.");
+        User user = userRepository.findByPhoneNumber(dto.getPhoneNumber());
+        log.info("아이디찾기 1차 검증: " + String.valueOf(user));
+        if (user != null) {
+            if (Objects.equals(user.getName(), dto.getName())) {
+                String email = user.getEmail();
+                log.info("이메일 :" + email);
+                return email;
+            }
+            return "일치하는 회원 정보가 없음";
+
         }
-        userRepository.deleteById(userInfo.getUserId());
+        return "일치하는 회원 정보가 없음";
     }
+
+    //비밀번호 변경 전화번호 이메일 일치하는지
+    public String sendEmail(ChangePasswordRequestDTO dto) {
+
+
+        User user = userRepository.findByPhoneNumber(dto.getPhoneNumber());
+        log.info("비번 변경 1차 검증: " + String.valueOf(user));
+        if (user != null) {
+            if (Objects.equals(user.getEmail(), dto.getEmail())) {
+                return user.getEmail();
+            }
+            return null;
+
+        }
+        return null;
+    }
+
+
+    public MailDTO createMailAndChangePassword(ChangePasswordRequestDTO cprdto) {
+
+        String str = getTempPassword();
+        MailDTO dto = new MailDTO();
+        dto.setAddress(cprdto.getEmail());
+        dto.setTitle(" Beginner Big Winner 임시비밀번호 안내 이메일 입니다.");
+        dto.setMessage("안녕하세요." + " 회원님의 임시 비밀번호는 "
+                + str + " 입니다." + " 로그인 후에 비밀번호를 변경을 해주세요");
+        updatePassword(str, cprdto);
+        return dto;
+    }
+
+
+    //임시 비밀번호로 업데이트
+
+    public void updatePassword(String str, ChangePasswordRequestDTO cprdto) {
+        String tempPassword = str;
+        User user = userRepository.findByPhoneNumber(cprdto.getPhoneNumber());
+        user.setPassword(encoder.encode(tempPassword));
+        userRepository.save(user);
+
+    }
+
+
+    //랜덤함수로 임시비밀번호 구문 만들기
+    public String getTempPassword() {
+        char[] charSet = new char[]{'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F',
+                'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'};
+
+        String str = "";
+
+        // 문자 배열 길이의 값을 랜덤으로 10개를 뽑아 구문을 작성함
+        int idx = 0;
+        for (int i = 0; i < 10; i++) {
+            idx = (int) (charSet.length * Math.random());
+            str += charSet[idx];
+        }
+        return str;
+    }
+
+    // 메일보내기
+    public void mailSend(MailDTO mailDTO) {
+        System.out.println("전송 완료!");
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(mailDTO.getAddress());
+        message.setSubject(mailDTO.getTitle());
+        message.setText(mailDTO.getMessage());
+        message.setFrom("ny567@naver.com");
+        message.setReplyTo("ny567@naver.com");
+        System.out.println("message" + message);
+        mailSender.send(message);
+    }
+
 
     //프로필 사진 업로드
     public String uploadProfileImage(MultipartFile originalFile) throws IOException {
@@ -198,7 +254,7 @@ public class UserService {
 
     @ResponseBody
 //카카오 받은 정보 가입하고 dto로
-public LoginResponseDTO kakaoLogin(String access_Token) {
+    public LoginResponseDTO kakaoLogin(String access_Token) {
         KakaoRegisterRequestDTO dto = new KakaoRegisterRequestDTO();
         String reqURL = "https://kapi.kakao.com/v2/user/me";
         try {
@@ -233,7 +289,6 @@ public LoginResponseDTO kakaoLogin(String access_Token) {
             String email = kakao_account.getAsJsonObject().get("email").getAsString();
             email = org.springframework.web.util.HtmlUtils.htmlEscape(email); //특수문자처리
             dto.setEmail((email));
-
 
 
             if (userRepository.existsByKakaoId(kakaoId)) { //카카오 가입 이미 한 사람이면
@@ -274,17 +329,17 @@ public LoginResponseDTO kakaoLogin(String access_Token) {
                     }
                 }
             }
-        }
-         catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
         return null;
     }
 
+
     public List<FavoriteListResponseDTO> favoriteToggle(FavoriteRequestDTO requestDTO) {
         User user = userRepository.findByEmail(requestDTO.getUserEmail()).orElseThrow();
         Integer resultCnt = favoriteStockRepository.existsByUserAndStock(user, requestDTO.getStockCode());
-        if(resultCnt>0){
+        if (resultCnt > 0) {
             List<FavoriteStock> byUserAndStockCode = favoriteStockRepository.findByUserAndStockCode(user, requestDTO.getStockCode());
             favoriteStockRepository.deleteAll(byUserAndStockCode);
         } else {
@@ -312,10 +367,10 @@ public LoginResponseDTO kakaoLogin(String access_Token) {
     public MyInfoResponseDTO getMyInfo(String email) {
         User user = userRepository.findByEmail(email).orElseThrow();
         List<Stock> stockList = stockRepository.getByUser(user);
-        return new MyInfoResponseDTO(user,stockList);
+        return new MyInfoResponseDTO(user, stockList);
     }
 
-    public List<RankResponseDTO> getRank(){
+    public List<RankResponseDTO> getRank() {
         List<User> ranks = userRepository.findAllByOrderByMoneyDesc();
         List<RankResponseDTO> responseDTOS = new ArrayList<>();
         Long i = 1L;
