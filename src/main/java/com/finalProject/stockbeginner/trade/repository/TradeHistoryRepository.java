@@ -9,4 +9,8 @@ import java.util.List;
 public interface TradeHistoryRepository extends JpaRepository<TradeHistory, String> {
 
     List<TradeHistory> findByUser(User user);
+
+    //거래내역 최신순서로 보여주기 위한 코드
+    List<TradeHistory> findByUserOrderByTradeDateDesc(User user);
+
 }
