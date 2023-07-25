@@ -42,6 +42,7 @@ public class UserController {
         try {
             LoginResponseDTO responseDTO
                     = userService.authenticate(dto);
+            log.info("로그인 리스폰스 dto : " + dto);
             return ResponseEntity.ok().body(responseDTO);
         } catch (Exception e) {
             e.printStackTrace();
