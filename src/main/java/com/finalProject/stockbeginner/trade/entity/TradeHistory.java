@@ -1,5 +1,6 @@
 package com.finalProject.stockbeginner.trade.entity;
 
+import com.finalProject.stockbeginner.trade.dto.request.TradeRequestDTO;
 import com.finalProject.stockbeginner.user.entity.User;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -43,4 +44,13 @@ public class TradeHistory {
     private LocalDateTime tradeDate;
     @Column(nullable = false)
     private String tradeType;
+
+    public TradeHistory(TradeRequestDTO dto, User user,String type){
+        this.stockId = dto.getStockId();
+        this.stockName = dto.getStockName();
+        this.price = dto.getPrice();
+        this.quantity = dto.getQuantity();
+        this.user = user;
+        this.tradeType = type;
+    }
 }

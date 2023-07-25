@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -47,12 +48,14 @@ public class TradeController {
     public ResponseEntity<?> getHistory(@PathVariable String email){
         try {
             List<TradeHistory> histories = tradeService.getTradeHistory(email);
+            //histories.sort(Collections.reverseOrder());
             return ResponseEntity.ok().body(histories);
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
 
+    //전체 랭킹 조회
     @GetMapping("/rank")
     public ResponseEntity<?> getAllRank(){
         try {
@@ -63,6 +66,7 @@ public class TradeController {
         }
     }
 
+    //내 랭킹 조회
     @GetMapping("/rank/{email}")
     public ResponseEntity<?> getOneRank(@PathVariable String email){
         try {
