@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -47,6 +48,7 @@ public class TradeController {
     public ResponseEntity<?> getHistory(@PathVariable String email){
         try {
             List<TradeHistory> histories = tradeService.getTradeHistory(email);
+            //histories.sort(Collections.reverseOrder());
             return ResponseEntity.ok().body(histories);
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
