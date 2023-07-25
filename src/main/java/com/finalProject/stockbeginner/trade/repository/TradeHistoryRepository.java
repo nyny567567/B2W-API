@@ -9,4 +9,5 @@ import java.util.List;
 public interface TradeHistoryRepository extends JpaRepository<TradeHistory, String> {
 
     List<TradeHistory> findByUser(User user);
+    List<TradeHistory> findByUserOrderByTradeDateDesc(User user);
 }

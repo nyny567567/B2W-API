@@ -53,6 +53,7 @@ public class TradeController {
         }
     }
 
+    //전체 랭킹 조회
     @GetMapping("/rank")
     public ResponseEntity<?> getAllRank(){
         try {
@@ -63,6 +64,7 @@ public class TradeController {
         }
     }
 
+    //내 랭킹 조회
     @GetMapping("/rank/{email}")
     public ResponseEntity<?> getOneRank(@PathVariable String email){
         try {

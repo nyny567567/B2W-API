@@ -87,10 +87,7 @@ public class TradeService {
             }
             user.setMoney(user.getMoney()+ requestDTO.getPrice());
             User savedUser = userRepository.save(user);
-            TradeHistory history = TradeHistory.builder()
-                    .user(user).stockId(requestDTO.getStockId()).stockName(requestDTO.getStockName())
-                    .price(requestDTO.getPrice()).quantity(requestDTO.getQuantity()).tradeType("sell")
-                    .build();
+            TradeHistory history = new TradeHistory(requestDTO,user,"sell");
             TradeHistory savedHistory = tradeHistoryRepository.save(history);
 
             long profit = (long) (((requestDTO.getPrice()/requestDTO.getQuantity())
