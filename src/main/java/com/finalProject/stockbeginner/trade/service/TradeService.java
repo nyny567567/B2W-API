@@ -108,7 +108,7 @@ public class TradeService {
 
     public List<TradeHistory> getTradeHistory(String email){
         User user = userRepository.findByEmail(email).orElseThrow();
-        return tradeHistoryRepository.findByUser(user);
+        return tradeHistoryRepository.findByUserOrderByTradeDateDesc(user);
     }
 
 
