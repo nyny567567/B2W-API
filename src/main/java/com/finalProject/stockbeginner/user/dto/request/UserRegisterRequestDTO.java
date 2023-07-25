@@ -1,6 +1,7 @@
 package com.finalProject.stockbeginner.user.dto.request;
 
 import com.finalProject.stockbeginner.user.entity.User;
+import com.finalProject.stockbeginner.user.entity.UserRole;
 import lombok.*;
 import org.apache.catalina.connector.Request;
 
@@ -59,6 +60,7 @@ public class UserRegisterRequestDTO {
                 .career(this.career)
                 .image((this.image))
                 .mbti(this.mbti)
+                .userRole(UserRole.BRONZE)
                 .build();
     }
 

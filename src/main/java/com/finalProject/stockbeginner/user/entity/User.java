@@ -48,6 +48,9 @@ public class User  {
     @Builder.Default
     private Long money = 5000000L;
 
+    @Builder.Default
+    private Long gradePoint = 0L;
+
     @CreationTimestamp
     private LocalDateTime regDate;
 
@@ -64,5 +67,9 @@ public class User  {
     private String image;
 
     private String mbti;
+
+    @Builder.Default
+    @Enumerated(EnumType.STRING)
+    private UserRole userRole = UserRole.BRONZE;
 
 }

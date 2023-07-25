@@ -16,7 +16,6 @@ public class OAuthService {
     private TokenProvider tokenProvider;
     private UserService userService;
     private UserRepository userRepository;
-//    private UserResponseDTO userResponseDTO;
 
     public String getKakaoAccessToken(String code) {
         String access_Token = "";
