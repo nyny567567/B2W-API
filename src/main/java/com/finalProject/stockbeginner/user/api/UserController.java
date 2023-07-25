@@ -228,12 +228,6 @@ public class UserController {
         return ResponseEntity.ok().body(myInfo);
     }
 
-    //전체회원의 보유 금액
-    @GetMapping("/rank")
-    public ResponseEntity<?> getRankAll() {
-        List<RankResponseDTO> ranks = userService.getRank();
-        return ResponseEntity.ok().body(ranks);
-    }
 
     //즐겨찾기 리스트 불러오기
     @GetMapping("/favorite/{email}")
