@@ -20,7 +20,8 @@ public class Inquiry {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private String id;
+    private Long id;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_email")
     private User user;

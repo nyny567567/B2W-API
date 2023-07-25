@@ -10,7 +10,7 @@ import lombok.*;
 @ToString
 public class BoardUpdateRequestDTO {
 
-    private String id;
+    private Long id;
     private String title;
     private String content;
     private String writer;

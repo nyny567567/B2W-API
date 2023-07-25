@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @ToString
 public class InquiryResponseDTO {
 
-    private String id;
+    private Long id;
     private String title;
     private String writer;
     private LocalDateTime date;

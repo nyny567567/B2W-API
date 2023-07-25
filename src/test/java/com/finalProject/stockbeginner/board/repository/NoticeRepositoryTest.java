@@ -1,5 +1,6 @@
 package com.finalProject.stockbeginner.board.repository;
 
+import com.finalProject.stockbeginner.board.dto.requestDTO.BoardRegisterRequestDTO;
 import com.finalProject.stockbeginner.board.entity.Notice;
 import com.finalProject.stockbeginner.user.entity.User;
 import com.finalProject.stockbeginner.user.repository.UserRepository;
@@ -34,9 +35,9 @@ class NoticeRepositoryTest {
         String content = "남탓 금지";
         User user = userRepository.findByEmail(email).orElseThrow();
 
-
-        Notice notice = Notice.builder().title(title).user(user).writer("최민수").content(content).build();
-
+        BoardRegisterRequestDTO requestDTO = BoardRegisterRequestDTO.builder().writer(user.getName()).content(content).title(title).build();
+        Notice notice = new Notice(requestDTO, user);
+        System.out.println("notice = " + notice);
         //when
         noticeRepository.save(notice);
 

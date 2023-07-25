@@ -20,14 +20,20 @@ public class Notice {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private String id;
+    private Long id;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_email")
+
     private User user;
+
     private String writer;
+
     @Column(nullable = false)
     private String title;
+
     private String content;
+
     @CreationTimestamp
     private LocalDateTime date;
 
