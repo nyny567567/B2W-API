@@ -416,12 +416,12 @@ public class UserService {
         }
     }
 
-    //등급 null인 사람 bronze로
-    public void upgradeBronze() {
-        List<User> users = userRepository.findByUserRole(null);
-        for (User user : users) {
-            user.setUserRole(UserRole.BRONZE);
-            userRepository.save(user);
-        }
-    }
+//    //등급 null인 사람 bronze로
+//    public void upgradeBronze() {
+//        List<User> users = userRepository.findByUserRole(null);
+//        for (User user : users) {
+//            user.setUserRole(UserRole.BRONZE);
+//            userRepository.save(user);
+//        }
+//    }
 }
