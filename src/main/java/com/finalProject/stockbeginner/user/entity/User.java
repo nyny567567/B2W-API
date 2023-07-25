@@ -48,6 +48,9 @@ public class User  {
     @Builder.Default
     private Long money = 5000000L;
 
+    @Builder.Default
+    private Long gradePoint = 0L;
+
     @CreationTimestamp
     private LocalDateTime regDate;
 
@@ -65,14 +68,8 @@ public class User  {
 
     private String mbti;
 
+    @Builder.Default
     @Enumerated(EnumType.STRING)
-    private UserRole userRole;
-
-    public void changeRole() {
-        if (userRole.equals(UserRole.BRONZE)) userRole = UserRole.SILVER;
-        else if (userRole.equals(UserRole.SILVER)) userRole = UserRole.GOLD;
-        else if (userRole.equals(UserRole.GOLD)) userRole = UserRole.BLACK;
-        else if (userRole.equals(UserRole.BLACK)) userRole = UserRole.BRONZE;
-    }
+    private UserRole userRole = UserRole.BRONZE;
 
 }

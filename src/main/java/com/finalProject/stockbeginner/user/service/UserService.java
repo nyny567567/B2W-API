@@ -16,6 +16,7 @@ import com.finalProject.stockbeginner.user.dto.response.MyInfoResponseDTO;
 import com.finalProject.stockbeginner.user.dto.response.UserRegisterResponseDTO;
 import com.finalProject.stockbeginner.user.entity.FavoriteStock;
 import com.finalProject.stockbeginner.user.entity.User;
+import com.finalProject.stockbeginner.user.entity.UserRole;
 import com.finalProject.stockbeginner.user.repository.FavoriteStockRepository;
 import com.finalProject.stockbeginner.user.repository.UserRepository;
 import com.google.gson.JsonElement;
@@ -389,10 +390,28 @@ public class UserService {
 
     }
 
-//    //등급 승급 수정중
-//    @Transactional
-//    public void changeRole(Long money) {
-//        User user = userRepository.findByMoney();
-//        user.changeRole();
-//    }
+    //등급 승급 관련
+    public void upgradeRole() {
+        List<User> users = userRepository.findAll();
+
+        for (User user : users) {
+            Boolean changed = null;
+
+            if (user.getUserRole() == UserRole.BRONZE && user.getGradePoint() >= 5000) {
+                user.setUserRole(UserRole.SILVER);
+                changed = true;
+            } else if (user.getUserRole() == UserRole.SILVER && user.getGradePoint() >= 10000) {
+                user.setUserRole(UserRole.GOLD);
+                changed = true;
+            } else if (user.getUserRole() == UserRole.GOLD) {
+                changed = false;
+            } else {
+                changed = false;
+            }
+
+            if(changed) {
+                userRepository.save(user);
+            }
+        }
+    }
 }
