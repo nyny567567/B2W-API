@@ -1,5 +1,6 @@
 package com.finalProject.stockbeginner.user.dto.request;
 
+import com.finalProject.stockbeginner.user.entity.UserRole;
 import lombok.*;
 
 import javax.validation.constraints.Email;
@@ -21,6 +22,8 @@ public class LoginRequestDTO {
 
     private String image;
 
+    private UserRole userRole;
+
     /** 아무 매개변수 없이 default값을 생성해주는 생성자 */
     public  LoginRequestDTO(){
 
@@ -29,6 +32,8 @@ public class LoginRequestDTO {
         this.password = "admin1987##";
 
         this.image = null;
+
+        this.userRole = UserRole.BRONZE;
 
 
     }
