@@ -31,6 +31,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -433,4 +434,18 @@ public class UserService {
         } else return "권한이 없습니다";
 
     }
+
+    //사용자 정보 수정
+    public String updateInfo(ChangeInfoRequestDTO dto, @AuthenticationPrincipal User user) {
+        Optional<User> loginUser = userRepository.findByEmail(user.getEmail());
+        User changeUser = loginUser.get();
+        changeUser.setMbti(dto.getMbti());
+        changeUser.setPassword(dto.getPassword());
+        changeUser.setNick(dto.getNick());
+        userRepository.save(user);
+        return "정보 수정이 완료되었습니다";
+
+
+    }
+
 }

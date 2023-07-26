@@ -9,6 +9,7 @@ import com.finalProject.stockbeginner.user.dto.response.FavoriteListResponseDTO;
 import com.finalProject.stockbeginner.user.dto.response.LoginResponseDTO;
 import com.finalProject.stockbeginner.user.dto.response.MyInfoResponseDTO;
 import com.finalProject.stockbeginner.user.dto.response.UserRegisterResponseDTO;
+import com.finalProject.stockbeginner.user.entity.User;
 import com.finalProject.stockbeginner.user.service.OAuthService;
 import com.finalProject.stockbeginner.user.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -107,6 +108,23 @@ public class UserController {
         return userService.forceGradeDown(dto);
 
     }
+
+    //회원 수정
+    @PatchMapping("/updateInfo")
+    public String updateInfo(@Validated @RequestBody ChangeInfoRequestDTO dto, @AuthenticationPrincipal User user) {
+        try {
+            log.info("로그인유저 " + user);
+            log.info(dto.toString());
+            return userService.updateInfo(dto, user);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "일치하는 회원 정보가 없음";
+        }
+    }
+
+
+    //회원 탈퇴
 
 
     //회원 가입

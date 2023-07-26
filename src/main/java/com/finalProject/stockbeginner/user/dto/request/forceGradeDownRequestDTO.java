@@ -1,6 +1,7 @@
 package com.finalProject.stockbeginner.user.dto.request;
 
 import lombok.*;
+import org.apache.catalina.security.SecurityUtil;
 
 @Getter
 @Setter
