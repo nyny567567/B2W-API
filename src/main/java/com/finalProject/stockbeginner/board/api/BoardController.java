@@ -64,7 +64,7 @@ public class BoardController {
     }
 
     //글 단일 조회
-    @GetMapping("/{type}/:{id}")
+    @GetMapping("/{type}/{id}")
     public ResponseEntity<?> getBoard(@PathVariable String type, @PathVariable String id){
         try {
             if(type.equals("notice")){

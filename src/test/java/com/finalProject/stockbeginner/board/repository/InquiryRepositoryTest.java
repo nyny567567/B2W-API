@@ -40,4 +40,14 @@ class InquiryRepositoryTest {
 
         //then
     }
+    
+    @Test
+    @DisplayName("단일 조회")
+    void searchOne() {
+        //given
+        Inquiry inquiry = inquiryRepository.findById(Long.parseLong("3")).orElseThrow();
+        //when
+        System.out.println("inquiry = " + inquiry);
+        //then
+    }
 }

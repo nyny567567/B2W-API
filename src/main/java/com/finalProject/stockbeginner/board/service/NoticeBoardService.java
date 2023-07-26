@@ -37,12 +37,12 @@ public class NoticeBoardService {
 
     //공지 삭제
     public void delete(String id){
-        noticeRepository.deleteById(id);
+        noticeRepository.deleteById(Long.parseLong(id));
     }
 
     //공지 단일 조회
     public NoticeResponseDTO findOne(String id){
-        Notice notice = noticeRepository.findById(id).orElseThrow();
+        Notice notice = noticeRepository.findById(Long.parseLong(id)).orElseThrow();
         return new NoticeResponseDTO(notice);
     }
 
@@ -54,7 +54,7 @@ public class NoticeBoardService {
     }
 
     public Boolean checkWriter(String id, String pw){
-        Notice notice = noticeRepository.findById(id).orElseThrow();
+        Notice notice = noticeRepository.findById(Long.parseLong(id)).orElseThrow();
         return notice.getUser().getPassword().equals(encoder.encode(pw));
     }
 

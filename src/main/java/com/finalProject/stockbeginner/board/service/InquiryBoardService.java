@@ -40,12 +40,12 @@ public class InquiryBoardService {
 
     //문의 삭제
     public void delete(String id){
-        inquiryRepository.deleteById(id);
+        inquiryRepository.deleteById(Long.parseLong(id));
     }
 
     //문의 단일 조회
     public InquiryResponseDTO findOne(String id){
-        Inquiry inquiry = inquiryRepository.findById(id).orElseThrow();
+        Inquiry inquiry = inquiryRepository.findById(Long.parseLong(id)).orElseThrow();
         return new InquiryResponseDTO(inquiry);
     }
 
@@ -57,7 +57,7 @@ public class InquiryBoardService {
     }
 
     public Boolean checkWriter(String id, String pw){
-        Inquiry inquiry = inquiryRepository.findById(id).orElseThrow();
+        Inquiry inquiry = inquiryRepository.findById(Long.parseLong(id)).orElseThrow();
         return inquiry.getUser().getPassword().equals(encoder.encode(pw));
     }
 }

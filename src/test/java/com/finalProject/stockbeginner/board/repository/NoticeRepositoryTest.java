@@ -59,7 +59,7 @@ class NoticeRepositoryTest {
     @DisplayName("삭제")
     void delete() {
         //given
-        noticeRepository.deleteById("5");
+        noticeRepository.deleteById(Long.parseLong("5"));
         //when
 
         //then
