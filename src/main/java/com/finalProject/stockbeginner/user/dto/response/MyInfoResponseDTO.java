@@ -2,6 +2,7 @@ package com.finalProject.stockbeginner.user.dto.response;
 
 import com.finalProject.stockbeginner.trade.entity.Stock;
 import com.finalProject.stockbeginner.user.entity.User;
+import com.finalProject.stockbeginner.user.entity.UserRole;
 import lombok.*;
 
 import java.util.ArrayList;
@@ -25,6 +26,7 @@ public class MyInfoResponseDTO {
     private String gender;
     private List<MyStock> myStocks;
     private String mbti;
+    private UserRole role;
 
     public MyInfoResponseDTO(User user, List<Stock> stocks){
         ArrayList<MyStock> myStocks = new ArrayList<>();
@@ -47,6 +49,7 @@ public class MyInfoResponseDTO {
         this.gender = user.getGender();
         this.myStocks = myStocks;
         this.mbti = user.getMbti();
+        this.role = user.getUserRole();
     }
 
 }
