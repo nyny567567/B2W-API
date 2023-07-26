@@ -52,6 +52,8 @@ public class InquiryBoardService {
     //문의 수정
     public void update(BoardUpdateRequestDTO updateRequestDTO){
         User user = userRepository.findByEmail(updateRequestDTO.getEmail()).orElseThrow();
+        Inquiry beforeInquiry = inquiryRepository.findById(updateRequestDTO.getId()).orElseThrow();
+        updateRequestDTO.setDate(beforeInquiry.getDate());
         Inquiry inquiry = new Inquiry(updateRequestDTO, user);
         inquiryRepository.save(inquiry);
     }

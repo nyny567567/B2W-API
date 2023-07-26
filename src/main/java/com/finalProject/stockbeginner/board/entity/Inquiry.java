@@ -45,5 +45,6 @@ public class Inquiry {
         this.writer = dto.getWriter();
         this.user = user;
         this.id = dto.getId();
+        this.date = dto.getDate();
     }
 }
