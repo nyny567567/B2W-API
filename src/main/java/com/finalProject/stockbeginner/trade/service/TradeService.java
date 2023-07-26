@@ -1,16 +1,21 @@
 package com.finalProject.stockbeginner.trade.service;
 
 import com.finalProject.stockbeginner.trade.dto.request.TradeRequestDTO;
+import com.finalProject.stockbeginner.trade.dto.response.RankResponseDTO;
+import com.finalProject.stockbeginner.trade.entity.Ranking;
 import com.finalProject.stockbeginner.trade.entity.Stock;
 import com.finalProject.stockbeginner.trade.entity.TradeHistory;
+import com.finalProject.stockbeginner.trade.repository.RankingRepository;
 import com.finalProject.stockbeginner.trade.repository.StockRepository;
 import com.finalProject.stockbeginner.trade.repository.TradeHistoryRepository;
 import com.finalProject.stockbeginner.user.entity.User;
 import com.finalProject.stockbeginner.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -21,6 +26,7 @@ public class TradeService {
     private final UserRepository userRepository;
     private final TradeHistoryRepository tradeHistoryRepository;
     private final StockRepository stockRepository;
+    private final RankingRepository rankingRepository;
 
     public String buyStock(TradeRequestDTO requestDTO){
         User user = userRepository.findByEmail(requestDTO.getEmail()).orElseThrow();
@@ -59,6 +65,7 @@ public class TradeService {
     public String sellStock(TradeRequestDTO requestDTO){
         User user = userRepository.findByEmail(requestDTO.getEmail()).orElseThrow();
         Stock existingStock = stockRepository.findOneByUserAndStockId(user, requestDTO.getStockId());
+
         Stock newStock;
         try {
             if(existingStock == null){
@@ -71,6 +78,8 @@ public class TradeService {
                         .quantity(existingStock.getQuantity()-requestDTO.getQuantity())
                         .build();
             }
+            long beforeQuantity = existingStock.getQuantity();
+            long beforePrice = existingStock.getPrice();
             if(newStock.getQuantity()==0){
                 stockRepository.delete(newStock);
             }else{
@@ -78,22 +87,43 @@ public class TradeService {
             }
             user.setMoney(user.getMoney()+ requestDTO.getPrice());
             User savedUser = userRepository.save(user);
-            TradeHistory history = TradeHistory.builder()
-                    .user(user).stockId(requestDTO.getStockId()).stockName(requestDTO.getStockName())
-                    .price(requestDTO.getPrice()).quantity(requestDTO.getQuantity()).tradeType("sell")
-                    .build();
+            TradeHistory history = new TradeHistory(requestDTO,user,"sell");
             TradeHistory savedHistory = tradeHistoryRepository.save(history);
+
+            long profit = (long) (((requestDTO.getPrice()/requestDTO.getQuantity())
+                    -(beforePrice/beforeQuantity))*
+                    requestDTO.getQuantity());
+            System.out.println("profit:"+profit);
+            if(rankingRepository.existsById(requestDTO.getEmail())){
+            Ranking userRank = rankingRepository.findById(requestDTO.getEmail()).orElseThrow();
+                profit += userRank.getProfit();
+            }
+            rankingRepository.save(Ranking.builder().userName(user.getName()).profit(profit).email(user.getEmail()).build());
             return "success";
         } catch (Exception e) {
+            e.printStackTrace();
             return "fail";
         }
     }
 
     public List<TradeHistory> getTradeHistory(String email){
         User user = userRepository.findByEmail(email).orElseThrow();
-        return tradeHistoryRepository.findByUser(user);
+        return tradeHistoryRepository.findByUserOrderByTradeDateDesc(user);
     }
 
 
+    public List<RankResponseDTO> getAllRank() {
+        List<Ranking> rankingList = rankingRepository.findAll(Sort.by(Sort.Direction.DESC,"profit"));
+        List<RankResponseDTO> dtoList = new ArrayList<>();
+        Long i = 1L;
+        for (Ranking ranking : rankingList){
+            RankResponseDTO dto = RankResponseDTO.builder().rank(i).userName(ranking.getUserName())
+                    .email(ranking.getEmail()).profit(ranking.getProfit())
+                    .build();
+            dtoList.add(dto);
+            i++;
+        }
+        return dtoList;
+    }
 }
 

@@ -2,6 +2,7 @@ package com.finalProject.stockbeginner.user.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.finalProject.stockbeginner.user.entity.User;
+import com.finalProject.stockbeginner.user.entity.UserRole;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -28,6 +29,10 @@ public class UserRegisterResponseDTO {
 
     private String phoneNumber;
 
+    private UserRole userRole;
+
+
+
 
     public UserRegisterResponseDTO(User user){
         this.phoneNumber = user.getPhoneNumber();
@@ -36,6 +41,7 @@ public class UserRegisterResponseDTO {
         this.nick = user.getNick();
         this.regDate = user.getRegDate();
         this.image = user.getImage();
+        this.userRole = user.getUserRole();
 
     }
 }

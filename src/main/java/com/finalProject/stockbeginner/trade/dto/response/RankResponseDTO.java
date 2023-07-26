@@ -11,5 +11,6 @@ import lombok.*;
 public class RankResponseDTO {
     private Long rank;
     private String userName;
-    private Long money;
+    private String email;
+    private Long profit;
 }

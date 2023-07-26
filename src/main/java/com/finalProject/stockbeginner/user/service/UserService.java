@@ -16,6 +16,7 @@ import com.finalProject.stockbeginner.user.dto.response.MyInfoResponseDTO;
 import com.finalProject.stockbeginner.user.dto.response.UserRegisterResponseDTO;
 import com.finalProject.stockbeginner.user.entity.FavoriteStock;
 import com.finalProject.stockbeginner.user.entity.User;
+import com.finalProject.stockbeginner.user.entity.UserRole;
 import com.finalProject.stockbeginner.user.repository.FavoriteStockRepository;
 import com.finalProject.stockbeginner.user.repository.UserRepository;
 import com.google.gson.JsonElement;
@@ -23,12 +24,14 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.hql.internal.ast.tree.IsNullLogicOperatorNode;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -369,20 +372,7 @@ public class UserService {
         User user = userRepository.findByEmail(email).orElseThrow();
         List<Stock> stockList = stockRepository.getByUser(user);
         return new MyInfoResponseDTO(user, stockList);
-    }
 
-    public List<RankResponseDTO> getRank() {
-        List<User> ranks = userRepository.findAllByOrderByMoneyDesc();
-        List<RankResponseDTO> responseDTOS = new ArrayList<>();
-        Long i = 1L;
-        for (User rank : ranks) {
-            RankResponseDTO dto = RankResponseDTO.builder()
-                    .rank(i).userName(rank.getName()).money(rank.getMoney())
-                    .build();
-            i++;
-            responseDTOS.add(dto);
-        }
-        return responseDTOS;
     }
 
     public List<FavoriteListResponseDTO> favoriteList(String email) {
@@ -402,10 +392,60 @@ public class UserService {
 
     }
 
-//    //등급 승급 수정중
-//    @Transactional
-//    public void changeRole(Long money) {
-//        User user = userRepository.findByMoney();
-//        user.changeRole();
-//    }
+    //등급 승급 관련
+    public void upgradeRole() {
+        List<User> users = userRepository.findAll();
+
+        for (User user : users) {
+            Boolean changed = null;
+
+            if (user.getUserRole() == UserRole.BRONZE && user.getGradePoint() >= 5000) {
+                user.setUserRole(UserRole.SILVER);
+                changed = true;
+            } else if (user.getUserRole() == UserRole.SILVER && user.getGradePoint() >= 10000) {
+                user.setUserRole(UserRole.GOLD);
+                changed = true;
+            } else if (user.getUserRole() == UserRole.GOLD) {
+                changed = false;
+            } else {
+                changed = false;
+            }
+
+            if (changed) {
+                userRepository.save(user);
+            }
+        }
+    }
+
+    //등급 강등
+    public String forceGradeDown(forceGradeDownRequestDTO dto) {
+        User user = userRepository.findByEmail(dto.getAdminEmail()).get();
+        if (user.getUserRole() == UserRole.ADMIN) {
+            Optional<User> black = userRepository.findByEmail(dto.getBlackEmail());
+            if (black.isPresent()) {
+                User blackee = black.get();
+                blackee.setUserRole(UserRole.BLACK);
+                System.out.println("user = " + user);
+                userRepository.save(blackee);
+                return "처리 완료되었습니다";
+            } else {
+                return "회원이 존재하지 않습니다";
+            }
+        } else return "권한이 없습니다";
+
+    }
+
+    //사용자 정보 수정
+    public String updateInfo(ChangeInfoRequestDTO dto, @AuthenticationPrincipal User user) {
+        Optional<User> loginUser = userRepository.findByEmail(user.getEmail());
+        User changeUser = loginUser.get();
+        changeUser.setMbti(dto.getMbti());
+        changeUser.setPassword(dto.getPassword());
+        changeUser.setNick(dto.getNick());
+        userRepository.save(user);
+        return "정보 수정이 완료되었습니다";
+
+
+    }
+
 }

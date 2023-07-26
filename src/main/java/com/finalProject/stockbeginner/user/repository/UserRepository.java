@@ -20,8 +20,6 @@ public interface UserRepository extends JpaRepository<User, String> {
 
     List<User> findAllByOrderByMoneyDesc();
 
-    //카카오유저 중복확인
-    Optional<User> findByKakaoId(long kakaoId);
 
     boolean existsByKakaoId(long kakaoId);
 
