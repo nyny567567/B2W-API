@@ -42,7 +42,6 @@ public class UserController {
         try {
             LoginResponseDTO responseDTO
                     = userService.authenticate(dto);
-            log.info("로그인 리스폰스 dto : " + dto);
             return ResponseEntity.ok().body(responseDTO);
         } catch (Exception e) {
             e.printStackTrace();
@@ -100,6 +99,13 @@ public class UserController {
             String answer = "다시 시도해주세요";
             return answer;
         }
+    }
+
+    //강등
+    @PostMapping("/forcegradedown")
+    public String forceGradeDown(@Validated @RequestBody forceGradeDownRequestDTO dto) {
+        return userService.forceGradeDown(dto);
+
     }
 
 
@@ -240,6 +246,8 @@ public class UserController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
+
 
 
 }
