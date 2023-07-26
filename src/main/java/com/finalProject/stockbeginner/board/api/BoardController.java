@@ -114,6 +114,7 @@ public class BoardController {
         return ResponseEntity.badRequest().body("잘못된 요청");
     }
 
+    // 수정,삭제 시 비밀번호 확인
     @PostMapping("/check/{type}")
     public ResponseEntity<?> checkWriter(@PathVariable String type,@RequestBody BoardCheckRequestDTO requestDTO){
         if(type.equals("notice")){
