@@ -1,6 +1,9 @@
 package com.finalProject.stockbeginner.user.repository;
 
+import com.finalProject.stockbeginner.user.dto.request.forceGradeDownRequestDTO;
 import com.finalProject.stockbeginner.user.entity.User;
+import com.finalProject.stockbeginner.user.entity.UserRole;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,7 +11,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.validation.constraints.Email;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -46,4 +51,22 @@ class UserRepositoryTest {
         //then
         System.out.println("result = " + result);
     }
+
+    @Test
+    @DisplayName("강등")
+    void forceGradeDown(forceGradeDownRequestDTO dto) {
+        //given
+        dto.getAdminEmail();
+        //when
+        Optional<User> black = userRepository.findByEmail(dto.getBlackEmail());
+        //then
+        if (black.isPresent()) {
+            User user = black.get();
+            user.setUserRole(UserRole.BLACK);
+            System.out.println("user = " + user);
+
+        }
+
+    }
+
 }

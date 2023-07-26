@@ -410,18 +410,27 @@ public class UserService {
                 changed = false;
             }
 
-            if(changed) {
+            if (changed) {
                 userRepository.save(user);
             }
         }
     }
 
-//    //등급 null인 사람 bronze로
-//    public void upgradeBronze() {
-//        List<User> users = userRepository.findByUserRole(null);
-//        for (User user : users) {
-//            user.setUserRole(UserRole.BRONZE);
-//            userRepository.save(user);
-//        }
-//    }
+    //등급 강등
+    public String forceGradeDown(forceGradeDownRequestDTO dto) {
+        User user = userRepository.findByEmail(dto.getAdminEmail()).get();
+        if (user.getUserRole() == UserRole.ADMIN) {
+            Optional<User> black = userRepository.findByEmail(dto.getBlackEmail());
+            if (black.isPresent()) {
+                User blackee = black.get();
+                blackee.setUserRole(UserRole.BLACK);
+                System.out.println("user = " + user);
+                userRepository.save(blackee);
+                return "처리 완료되었습니다";
+            } else {
+                return "회원이 존재하지 않습니다";
+            }
+        } else return "권한이 없습니다";
+
+    }
 }
