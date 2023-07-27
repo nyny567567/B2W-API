@@ -54,15 +54,19 @@ class UserRepositoryTest {
 
     @Test
     @DisplayName("강등")
-    void forceGradeDown(forceGradeDownRequestDTO dto) {
+    void forceGradeDown() {
         //given
-        dto.getAdminEmail();
+         Optional<User> admin = userRepository.findByEmail("m1@naver.com");
+         User blacker = admin.get();
+         if(blacker.getUserRole() == UserRole.ADMIN);
+
         //when
-        Optional<User> black = userRepository.findByEmail(dto.getBlackEmail());
+        Optional<User> black = userRepository.findByEmail("n6@naver.com");
         //then
         if (black.isPresent()) {
             User user = black.get();
             user.setUserRole(UserRole.BLACK);
+            userRepository.save(user);
             System.out.println("user = " + user);
 
         }

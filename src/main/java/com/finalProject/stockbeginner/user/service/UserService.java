@@ -1,5 +1,6 @@
 package com.finalProject.stockbeginner.user.service;
 
+import ch.qos.logback.core.net.SyslogOutputStream;
 import com.finalProject.stockbeginner.exception.DuplicatedEmailException;
 import com.finalProject.stockbeginner.trade.dto.response.RankResponseDTO;
 import com.finalProject.stockbeginner.trade.entity.Stock;
@@ -419,8 +420,10 @@ public class UserService {
 
     //등급 강등
     public String forceGradeDown(forceGradeDownRequestDTO dto) {
-        User user = userRepository.findByEmail(dto.getAdminEmail()).get();
-        if (user.getUserRole() == UserRole.ADMIN) {
+        Optional user = userRepository.findByEmail(dto.getAdminEmail());
+        log.info("유저체크: " + user);
+        User admin = (User) user.get();
+        if (admin.getUserRole() == UserRole.ADMIN) {
             Optional<User> black = userRepository.findByEmail(dto.getBlackEmail());
             if (black.isPresent()) {
                 User blackee = black.get();

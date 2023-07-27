@@ -1,5 +1,6 @@
 package com.finalProject.stockbeginner.user.api;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.finalProject.stockbeginner.exception.DuplicatedEmailException;
 import com.finalProject.stockbeginner.exception.NoRegisteredArgumentsException;
 import com.finalProject.stockbeginner.trade.dto.response.RankResponseDTO;
