@@ -127,8 +127,8 @@ public class UserController {
 
 
     //회원 탈퇴
-    @DeleteMapping("/deleteInfo")
-    String deleteInfo(String email) {
+    @DeleteMapping("/deleteInfo/{email}")
+    String deleteInfo(@PathVariable("email") String email) {
         try {
             log.info("이메일 : " + email);
             return userService.deleteInfo(email);

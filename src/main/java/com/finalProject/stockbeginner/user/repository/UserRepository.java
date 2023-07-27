@@ -1,6 +1,7 @@
 package com.finalProject.stockbeginner.user.repository;
 
 import com.finalProject.stockbeginner.user.entity.User;
+import org.hibernate.sql.Delete;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -24,6 +25,8 @@ public interface UserRepository extends JpaRepository<User, String> {
     boolean existsByKakaoId(long kakaoId);
 
     User findByPhoneNumber(String phoneNumber);
+
+    void delete(User user);
 
 }
 

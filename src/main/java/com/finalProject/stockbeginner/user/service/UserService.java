@@ -455,8 +455,10 @@ public class UserService {
         Optional<User> loginUser = userRepository.findByEmail(email);
         log.info("서비스 이메일 : " + email);
         log.info("로그인유저 : " + loginUser);
-        User deleteUser = loginUser.get();
-        userRepository.delete(deleteUser);
-        return "탈퇴가 완료되었습니다";
+        if (loginUser.isPresent()) {
+            userRepository.delete(loginUser.get());
+            return "탈퇴가 완료되었습니다";
+        }
+        return "다시 시도해주세요";
     }
 }
