@@ -445,6 +445,8 @@ public class UserService {
         changeUser.setMbti(dto.getMbti());
         changeUser.setPassword(dto.getPassword());
         changeUser.setNick(dto.getNick());
+        changeUser.setAge(dto.getAge());
+        changeUser.setCareer(dto.getCareer());
         userRepository.save(changeUser);
         return "정보 수정이 완료되었습니다";
 

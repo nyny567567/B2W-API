@@ -50,7 +50,7 @@ public class UserController {
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.badRequest()
-                    .body(e.getMessage());
+                    .body("e.getMessage()");
         }
     }
 
@@ -116,7 +116,7 @@ public class UserController {
     @PatchMapping("/updateInfo")
     public String updateInfo(@Validated @RequestBody ChangeInfoRequestDTO dto) {
         try {
-            log.info(dto.toString());
+            log.info("체인지디티오: " + dto.toString());
             return userService.updateInfo(dto);
 
         } catch (Exception e) {

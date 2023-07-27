@@ -34,7 +34,7 @@ public class UserRegisterRequestDTO {
     @Size(min = 2, max = 10)
     private String nick;
 
-    @NotBlank
+
     @Size(max = 11)
     private String phoneNumber;
 
