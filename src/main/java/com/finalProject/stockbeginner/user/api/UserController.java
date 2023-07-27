@@ -50,7 +50,7 @@ public class UserController {
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.badRequest()
-                    .body("e.getMessage()");
+                    .body(e.getMessage());
         }
     }
 
