@@ -445,7 +445,7 @@ public class UserService {
         Optional<User> loginUser = userRepository.findByEmail(dto.getEmail());
         User changeUser = loginUser.get();
         changeUser.setMbti(dto.getMbti());
-        changeUser.setPassword(dto.getPassword());
+        changeUser.setPassword(encoder.encode(dto.getPassword()));
         changeUser.setNick(dto.getNick());
         changeUser.setAge(dto.getAge());
         changeUser.setCareer(dto.getCareer());
