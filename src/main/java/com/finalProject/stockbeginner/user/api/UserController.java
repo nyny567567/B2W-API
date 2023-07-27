@@ -1,5 +1,6 @@
 package com.finalProject.stockbeginner.user.api;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.finalProject.stockbeginner.exception.DuplicatedEmailException;
 import com.finalProject.stockbeginner.exception.NoRegisteredArgumentsException;
 import com.finalProject.stockbeginner.trade.dto.response.RankResponseDTO;
@@ -9,6 +10,7 @@ import com.finalProject.stockbeginner.user.dto.response.FavoriteListResponseDTO;
 import com.finalProject.stockbeginner.user.dto.response.LoginResponseDTO;
 import com.finalProject.stockbeginner.user.dto.response.MyInfoResponseDTO;
 import com.finalProject.stockbeginner.user.dto.response.UserRegisterResponseDTO;
+import com.finalProject.stockbeginner.user.entity.User;
 import com.finalProject.stockbeginner.user.service.OAuthService;
 import com.finalProject.stockbeginner.user.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +19,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
@@ -106,6 +110,33 @@ public class UserController {
     public String forceGradeDown(@Validated @RequestBody forceGradeDownRequestDTO dto) {
         return userService.forceGradeDown(dto);
 
+    }
+
+    //회원 수정
+    @PatchMapping("/updateInfo")
+    public String updateInfo(@Validated @RequestBody ChangeInfoRequestDTO dto) {
+        try {
+            log.info(dto.toString());
+            return userService.updateInfo(dto);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "일치하는 회원 정보가 없음";
+        }
+    }
+
+
+    //회원 탈퇴
+    @DeleteMapping("/deleteInfo")
+    String deleteInfo(String email) {
+        try {
+            log.info("이메일 : " + email);
+            return userService.deleteInfo(email);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "일치하는 회원 정보가 없음";
+        }
     }
 
 

@@ -1,5 +1,6 @@
 package com.finalProject.stockbeginner.user.service;
 
+import ch.qos.logback.core.net.SyslogOutputStream;
 import com.finalProject.stockbeginner.exception.DuplicatedEmailException;
 import com.finalProject.stockbeginner.trade.dto.response.RankResponseDTO;
 import com.finalProject.stockbeginner.trade.entity.Stock;
@@ -31,6 +32,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -418,8 +420,10 @@ public class UserService {
 
     //등급 강등
     public String forceGradeDown(forceGradeDownRequestDTO dto) {
-        User user = userRepository.findByEmail(dto.getAdminEmail()).get();
-        if (user.getUserRole() == UserRole.ADMIN) {
+        Optional user = userRepository.findByEmail(dto.getAdminEmail());
+        log.info("유저체크: " + user);
+        User admin = (User) user.get();
+        if (admin.getUserRole() == UserRole.ADMIN) {
             Optional<User> black = userRepository.findByEmail(dto.getBlackEmail());
             if (black.isPresent()) {
                 User blackee = black.get();
@@ -432,5 +436,27 @@ public class UserService {
             }
         } else return "권한이 없습니다";
 
+    }
+
+    //사용자 정보 수정
+    public String updateInfo(ChangeInfoRequestDTO dto) {
+        Optional<User> loginUser = userRepository.findByEmail(dto.getEmail());
+        User changeUser = loginUser.get();
+        changeUser.setMbti(dto.getMbti());
+        changeUser.setPassword(dto.getPassword());
+        changeUser.setNick(dto.getNick());
+        userRepository.save(changeUser);
+        return "정보 수정이 완료되었습니다";
+
+
+    }
+
+    public String deleteInfo(String email) {
+        Optional<User> loginUser = userRepository.findByEmail(email);
+        log.info("서비스 이메일 : " + email);
+        log.info("로그인유저 : " + loginUser);
+        User deleteUser = loginUser.get();
+        userRepository.delete(deleteUser);
+        return "탈퇴가 완료되었습니다";
     }
 }

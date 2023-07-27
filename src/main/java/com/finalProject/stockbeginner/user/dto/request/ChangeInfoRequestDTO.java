@@ -1,7 +1,19 @@
 package com.finalProject.stockbeginner.user.dto.request;
 
-public class ChangeInfoRequestDTO {
-    private String newPassword;
+import lombok.*;
 
-    private String newNick;
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode
+@AllArgsConstructor
+@Builder
+public class ChangeInfoRequestDTO {
+    private String password;
+
+    private String nick;
+
+    private String mbti;
+
+    private String email;
 }
