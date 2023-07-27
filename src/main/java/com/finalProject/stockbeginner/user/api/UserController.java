@@ -111,11 +111,11 @@ public class UserController {
 
     //회원 수정
     @PatchMapping("/updateInfo")
-    public String updateInfo(@Validated @RequestBody ChangeInfoRequestDTO dto, @AuthenticationPrincipal User user) {
+    public String updateInfo(@Validated @RequestBody ChangeInfoRequestDTO dto, @LoginUser SessionUser user) {
         try {
-            log.info("로그인유저 " + user);
+            log.info("로그인유저 " + tokenUserInfo);
             log.info(dto.toString());
-            return userService.updateInfo(dto, user);
+            return userService.updateInfo(dto, tokenUserInfo);
 
         } catch (Exception e) {
             e.printStackTrace();

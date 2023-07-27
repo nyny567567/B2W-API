@@ -5,6 +5,7 @@ import com.finalProject.stockbeginner.trade.dto.response.RankResponseDTO;
 import com.finalProject.stockbeginner.trade.entity.Stock;
 import com.finalProject.stockbeginner.trade.repository.StockRepository;
 import com.finalProject.stockbeginner.user.auth.TokenProvider;
+import com.finalProject.stockbeginner.user.auth.TokenUserInfo;
 import com.finalProject.stockbeginner.user.dto.request.*;
 import com.finalProject.stockbeginner.user.dto.request.FavoriteRequestDTO;
 import com.finalProject.stockbeginner.user.dto.request.KakaoRegisterRequestDTO;
@@ -60,6 +61,7 @@ public class UserService {
     private final FavoriteStockRepository favoriteStockRepository;
     private final StockRepository stockRepository;
     private final JavaMailSender mailSender;
+    private final TokenUserInfo tokenUserInfo;
 
 
     @Value("${upload.path}")
@@ -436,16 +438,17 @@ public class UserService {
     }
 
     //사용자 정보 수정
-    public String updateInfo(ChangeInfoRequestDTO dto, @AuthenticationPrincipal User user) {
-        Optional<User> loginUser = userRepository.findByEmail(user.getEmail());
-        User changeUser = loginUser.get();
-        changeUser.setMbti(dto.getMbti());
-        changeUser.setPassword(dto.getPassword());
-        changeUser.setNick(dto.getNick());
-        userRepository.save(user);
-        return "정보 수정이 완료되었습니다";
-
-
+    public String updateInfo(ChangeInfoRequestDTO dto, String email) {
+        Optional<User> loginUser = userRepository.findByEmail(tokenUserInfo.getEmail());
+        if(loginUser.isPresent()) {
+            User changeUser = loginUser.get();
+            changeUser.setMbti(dto.getMbti());
+            changeUser.setPassword(dto.getPassword());
+            changeUser.setNick(dto.getNick());
+            userRepository.save(changeUser);
+            return "정보 수정이 완료되었습니다";
+        }
+        return "다시 로그인해주세요";
     }
 
 }
