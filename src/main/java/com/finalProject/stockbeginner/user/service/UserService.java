@@ -439,16 +439,24 @@ public class UserService {
     }
 
     //사용자 정보 수정
-    public String updateInfo(ChangeInfoRequestDTO dto, @AuthenticationPrincipal User user) {
-        Optional<User> loginUser = userRepository.findByEmail(user.getEmail());
+    public String updateInfo(ChangeInfoRequestDTO dto) {
+        Optional<User> loginUser = userRepository.findByEmail(dto.getEmail());
         User changeUser = loginUser.get();
         changeUser.setMbti(dto.getMbti());
         changeUser.setPassword(dto.getPassword());
         changeUser.setNick(dto.getNick());
-        userRepository.save(user);
+        userRepository.save(changeUser);
         return "정보 수정이 완료되었습니다";
 
 
     }
 
+    public String deleteInfo(String email) {
+        Optional<User> loginUser = userRepository.findByEmail(email);
+        log.info("서비스 이메일 : " + email);
+        log.info("로그인유저 : " + loginUser);
+        User deleteUser = loginUser.get();
+        userRepository.delete(deleteUser);
+        return "탈퇴가 완료되었습니다";
+    }
 }
