@@ -14,4 +14,10 @@ public class ChangeInfoRequestDTO {
     private String nick;
 
     private String mbti;
+
+    private Integer age;
+
+    private String career;
+
+    private String email;
 }

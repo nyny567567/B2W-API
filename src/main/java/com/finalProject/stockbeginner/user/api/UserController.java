@@ -1,5 +1,6 @@
 package com.finalProject.stockbeginner.user.api;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.finalProject.stockbeginner.exception.DuplicatedEmailException;
 import com.finalProject.stockbeginner.exception.NoRegisteredArgumentsException;
 import com.finalProject.stockbeginner.trade.dto.response.RankResponseDTO;
@@ -18,6 +19,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
@@ -47,7 +50,7 @@ public class UserController {
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.badRequest()
-                    .body(e.getMessage());
+                    .body("e.getMessage()");
         }
     }
 
@@ -111,11 +114,10 @@ public class UserController {
 
     //회원 수정
     @PatchMapping("/updateInfo")
-    public String updateInfo(@Validated @RequestBody ChangeInfoRequestDTO dto, @LoginUser SessionUser user) {
+    public String updateInfo(@Validated @RequestBody ChangeInfoRequestDTO dto) {
         try {
-            log.info("로그인유저 " + tokenUserInfo);
-            log.info(dto.toString());
-            return userService.updateInfo(dto, tokenUserInfo);
+            log.info("체인지디티오: " + dto.toString());
+            return userService.updateInfo(dto);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -125,6 +127,17 @@ public class UserController {
 
 
     //회원 탈퇴
+    @DeleteMapping("/deleteInfo/{email}")
+    String deleteInfo(@PathVariable("email") String email) {
+        try {
+            log.info("이메일 : " + email);
+            return userService.deleteInfo(email);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "일치하는 회원 정보가 없음";
+        }
+    }
 
 
     //회원 가입

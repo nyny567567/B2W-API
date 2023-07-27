@@ -1,5 +1,6 @@
 package com.finalProject.stockbeginner.user.service;
 
+import ch.qos.logback.core.net.SyslogOutputStream;
 import com.finalProject.stockbeginner.exception.DuplicatedEmailException;
 import com.finalProject.stockbeginner.trade.dto.response.RankResponseDTO;
 import com.finalProject.stockbeginner.trade.entity.Stock;
@@ -421,8 +422,10 @@ public class UserService {
 
     //등급 강등
     public String forceGradeDown(forceGradeDownRequestDTO dto) {
-        User user = userRepository.findByEmail(dto.getAdminEmail()).get();
-        if (user.getUserRole() == UserRole.ADMIN) {
+        Optional user = userRepository.findByEmail(dto.getAdminEmail());
+        log.info("유저체크: " + user);
+        User admin = (User) user.get();
+        if (admin.getUserRole() == UserRole.ADMIN) {
             Optional<User> black = userRepository.findByEmail(dto.getBlackEmail());
             if (black.isPresent()) {
                 User blackee = black.get();
@@ -438,17 +441,28 @@ public class UserService {
     }
 
     //사용자 정보 수정
-    public String updateInfo(ChangeInfoRequestDTO dto, String email) {
-        Optional<User> loginUser = userRepository.findByEmail(tokenUserInfo.getEmail());
-        if(loginUser.isPresent()) {
-            User changeUser = loginUser.get();
-            changeUser.setMbti(dto.getMbti());
-            changeUser.setPassword(dto.getPassword());
-            changeUser.setNick(dto.getNick());
-            userRepository.save(changeUser);
-            return "정보 수정이 완료되었습니다";
-        }
-        return "다시 로그인해주세요";
+    public String updateInfo(ChangeInfoRequestDTO dto) {
+        Optional<User> loginUser = userRepository.findByEmail(dto.getEmail());
+        User changeUser = loginUser.get();
+        changeUser.setMbti(dto.getMbti());
+        changeUser.setPassword(dto.getPassword());
+        changeUser.setNick(dto.getNick());
+        changeUser.setAge(dto.getAge());
+        changeUser.setCareer(dto.getCareer());
+        userRepository.save(changeUser);
+        return "정보 수정이 완료되었습니다";
+
+
     }
 
+    public String deleteInfo(String email) {
+        Optional<User> loginUser = userRepository.findByEmail(email);
+        log.info("서비스 이메일 : " + email);
+        log.info("로그인유저 : " + loginUser);
+        if (loginUser.isPresent()) {
+            userRepository.delete(loginUser.get());
+            return "탈퇴가 완료되었습니다";
+        }
+        return "다시 시도해주세요";
+    }
 }
