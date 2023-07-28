@@ -77,7 +77,6 @@ public class UserController {
             log.info(dto.toString());
             String email
                     = userService.searchId(dto);
-            log.info("컨트롤러 이메일 :" + email);
             return email;
         } catch (Exception e) {
             e.printStackTrace();
