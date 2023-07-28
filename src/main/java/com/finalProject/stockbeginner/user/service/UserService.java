@@ -299,10 +299,13 @@ public class UserService {
 
 
             if (userRepository.existsByKakaoId(kakaoId)) { //카카오 가입 이미 한 사람이면
+                User user = userRepository.findByEmail(email).get();
                 LoginRequestDTO loginRequestDTO = new LoginRequestDTO();
-                loginRequestDTO.setEmail(dto.getEmail());
-                loginRequestDTO.setPassword(dto.getPassword());
-                loginRequestDTO.setImage(dto.getImage());
+                loginRequestDTO.setEmail(user.getEmail());
+                loginRequestDTO.setPassword(user.getPassword());
+                loginRequestDTO.setImage(user.getImage());
+                loginRequestDTO.setUserRole(user.getUserRole());
+                System.out.println("카카오 리퀘스트: " + loginRequestDTO);
                 LoginResponseDTO kakaoDTO = kakaoAuthenticate(loginRequestDTO); //토큰발급
                 System.out.println("카카오 리스폰스: " + kakaoDTO);
                 return kakaoDTO;
@@ -327,6 +330,7 @@ public class UserService {
                         LoginRequestDTO loginRequestDTO = new LoginRequestDTO();
                         loginRequestDTO.setEmail(kakaoUser.getEmail());
                         loginRequestDTO.setPassword(kakaoUser.getPassword()); //리퀘스트에 이메일 패스워드 넣어준다
+                        loginRequestDTO.setUserRole(kakaoUser.getUserRole());
                         System.out.println("카카오 리퀘스트 : " + loginRequestDTO);
 
                         LoginResponseDTO kakaoDTO = kakaoAuthenticate(loginRequestDTO); //토큰발급
